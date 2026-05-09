@@ -6,50 +6,11 @@
     <title>微動身活</title>
     <link rel="icon" type="image/png" href="icon.png">
     <style>
-        body, html { margin: 0; padding: 0; height: 100%; font-family: -apple-system, sans-serif; background-color: #FFF5F7; }
-        /* 引導畫面樣式 - 預設隱藏 */
-        #ig-guide { 
-            display: none; 
-            flex-direction: column; 
-            align-items: center; 
-            justify-content: center; 
-            height: 100vh; 
-            text-align: center; 
-            padding: 0 20px;
-        }
-        .card { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        .pink { color: #E87A90; font-weight: bold; }
-        .arrow { font-size: 40px; color: #E87A90; margin: 10px 0; }
-        /* 電腦版 iframe 樣式 */
-        #desktop-frame { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; }
+        iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
     </style>
 </head>
 <body>
-
-    <div id="ig-guide">
-        <div class="card">
-            <h2 style="margin-top:0;">🌸 系統連線提醒</h2>
-            <p>偵測到 Instagram 內建瀏覽器限制</p>
-            <div class="arrow">↑ ↑ ↑</div>
-            <p>1. 點擊右上角<strong>「...」</strong></p>
-            <p>2. 選擇<strong>「在瀏覽器中開啟」</strong></p>
-            <p style="font-size: 0.9em; color: #666;">(Safari / Chrome / Samsung)</p>
-        </div>
-    </div>
-
-    <iframe id="desktop-frame" src="https://script.google.com/macros/s/AKfycbzMsKpq2PiUuvvHF_lZhIRIA4KnRC553LFVFLcDPZqD1CArDjBtyjyZeu5kKeg31SM/exec"></iframe>
-
-    <script>
-        var ua = navigator.userAgent || navigator.vendor || window.opera;
-        var isInstagram = /Instagram/.test(ua);
-
-        if (isInstagram) {
-            // 如果是 IG，顯示引導，不載入 iframe
-            document.getElementById('ig-guide').style.display = 'flex';
-        } else {
-            // 如果是電腦或正常瀏覽器，顯示 iframe 並直接載入
-            document.getElementById('desktop-frame').style.display = 'block';
-        }
-    </script>
+    <iframe src="https://script.google.com/macros/s/AKfycbzMsKpq2PiUuvvHF_lZhIRIA4KnRC553LFVFLcDPZqD1CArDjBtyjyZeu5kKeg31SM/exec"></iframe>
 </body>
 </html>
