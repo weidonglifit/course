@@ -11,12 +11,22 @@
     </style>
 </head>
 <body>
-    <script>
-        // 判斷是否為 Instagram 內建瀏覽器
-        if (/Instagram/.test(navigator.userAgent)) {
-            // 如果是 IG：直接覆寫畫面顯示文字，不載入 iframe
+   <script>
+        // 1. 【自動淨化網址】如果發現網址帶有追蹤參數，立即清除並保持乾淨網址
+        if (location.search.indexOf('fbclid') !== -1 || location.search.indexOf('paverf') !== -1) {
+            var cleanUrl = location.protocol + '//' + location.host + location.pathname;
+            window.history.replaceState({}, document.title, cleanUrl);
+        }
+
+        // 2. 【環境判斷】
+        var ua = navigator.userAgent || navigator.vendor || window.opera;
+        var isInstagram = /Instagram/.test(ua);
+
+        if (isInstagram) {
+            // 如果是 IG：顯示引導，不載入 iframe
             document.body.style.padding = "50px 20px";
             document.body.style.textAlign = "center";
+            document.body.style.fontFamily = "sans-serif";
             document.body.innerHTML = "<h3>🌸 系統連線提醒</h3>請點擊右上角「● ● ●」，並選擇「在瀏覽器中開啟」以進行預約。";
         } else {
             // 如果不是 IG：載入原本的 iframe
