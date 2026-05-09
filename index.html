@@ -27,7 +27,7 @@
         if (isInstagram) {
             // IG 環境：絕對不載入 Google，避免噴出 UNDEFINED
             document.body.style.cssText = "padding:50px 20px; text-align:center; font-family:sans-serif; background:#FFF5F7;";
-            document.body.innerHTML = "<h3>🌸 系統連線提醒</h3>請點擊右上角「● ● ●」<br>並選擇<strong>「在瀏覽器中開啟」</strong>以進行預約。";
+            document.body.innerHTML = "<h3>系統連線提醒 不支援Instagram瀏覽</h3>請點擊右上角「● ● ●」<br>並選擇<strong>「在瀏覽器中開啟」</strong>以進行預約。";
         } else if (isMobileWidth) {
             // 手機版 Safari/Chrome：直接跳轉 (解決自動展開，避開 iframe 卡死)
             window.location.replace(gasUrl);
