@@ -12,26 +12,28 @@
 </head>
 <body>
    <script>
-        // 1. 【自動淨化網址】如果發現網址帶有追蹤參數，立即清除並保持乾淨網址
+        // 1. 淨化網域 (移除 FB/IG 追蹤碼)
         if (location.search.indexOf('fbclid') !== -1 || location.search.indexOf('paverf') !== -1) {
             var cleanUrl = location.protocol + '//' + location.host + location.pathname;
             window.history.replaceState({}, document.title, cleanUrl);
         }
 
-        // 2. 【環境判斷】
         var ua = navigator.userAgent || navigator.vendor || window.opera;
         var isInstagram = /Instagram/.test(ua);
+        // 偵測螢幕寬度，通常手機小於 768px
+        var isMobileWidth = window.innerWidth <= 768; 
+        var gasUrl = "https://script.google.com/macros/s/AKfycbzMsKpq2PiUuvvHF_lZhIRIA4KnRC553LFVFLcDPZqD1CArDjBtyjyZeu5kKeg31SM/exec";
 
         if (isInstagram) {
-            // 如果是 IG：顯示引導，不載入 iframe
-            document.body.style.padding = "50px 20px";
-            document.body.style.textAlign = "center";
-            document.body.style.fontFamily = "sans-serif";
-            document.body.innerHTML = "<h3>🌸 系統連線提醒</h3>請點擊右上角「● ● ●」，並選擇「在瀏覽器中開啟」以進行預約。";
+            // IG 環境：絕對不載入 Google，避免噴出 UNDEFINED
+            document.body.style.cssText = "padding:50px 20px; text-align:center; font-family:sans-serif; background:#FFF5F7;";
+            document.body.innerHTML = "<h3>🌸 系統連線提醒</h3>請點擊右上角「● ● ●」<br>並選擇<strong>「在瀏覽器中開啟」</strong>以進行預約。";
+        } else if (isMobileWidth) {
+            // 手機版 Safari/Chrome：直接跳轉 (解決自動展開，避開 iframe 卡死)
+            window.location.replace(gasUrl);
         } else {
-            // 如果不是 IG：載入原本的 iframe
-            //window.location.replace(https://script.google.com/macros/s/AKfycbzMsKpq2PiUuvvHF_lZhIRIA4KnRC553LFVFLcDPZqD1CArDjBtyjyZeu5kKeg31SM/exec);
-            document.body.innerHTML = '<iframe src="https://script.google.com/macros/s/AKfycbzMsKpq2PiUuvvHF_lZhIRIA4KnRC553LFVFLcDPZqD1CArDjBtyjyZeu5kKeg31SM/exec" style="position:absolute; top:0; left:0; width:100%; height:100%; border:none;"></iframe>';
+            // 電腦版：維持原本的 iframe，保證顯示正常
+            document.body.innerHTML = '<iframe src="' + gasUrl + '" style="position:absolute; top:0; left:0; width:100%; height:100%; border:none;"></iframe>';
         }
     </script>
 </body>
