@@ -4972,16 +4972,16 @@ function injectCommonRules() {
 // 確保在頁面載入後執行
 window.addEventListener('load', () => {
   const openingNotice = document.getElementById('opening-notice');
-  if (openingNotice) {
+  if (0) {
     const today = new Date();
     // 設定截止日期為 2026 年 5 月 24 日 的凌晨 00:00:00
     // (JavaScript 的月份是從 0 開始算，所以 4 代表 5 月)
     const targetDate = new Date(2026, 4, 24); 
 
     if (today < targetDate) {
-      openingNotice.innerText = "微動身活";
+      openingNotice.innerText = "WEI DONG";
     } else {
-      openingNotice.innerText = "微動身活";
+      openingNotice.innerText = "WEI DONG";
     }
   }
   injectCommonRules();
