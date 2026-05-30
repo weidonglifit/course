@@ -3003,7 +3003,7 @@ window.addEventListener('load', function() {
     const endTime = performance.now();
     // 3. 計算差值並換算成秒數 (保留三位小數)
     const durationSeconds = ((endTime - startTime) / 1000).toFixed(3);
-    
+    closeOverlay();
     console.log(`🎉 載入並渲染成功！總共花費了 ${durationSeconds} 秒。`);
   })
   .catch(function(error) {
