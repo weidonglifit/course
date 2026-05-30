@@ -5060,7 +5060,7 @@ window.addEventListener('load', () => {
     }
   }
   injectCommonRules();
-        const video = document.getElementById('intro-video');
+        
         const MAX_WAIT_TIME = 6000; // 設定最大等待時間（例如 10 秒）
 
         // 啟動計時器
@@ -5070,12 +5070,9 @@ window.addEventListener('load', () => {
         }, MAX_WAIT_TIME);
 
         // 原本的監聽器
-    if (video) {
-        video.onended = function() {
-            clearTimeout(backupTimer); // 如果正常結束，就清除計時器
-            closeOverlay();
-        };
-    }
+   
+        
+   
 });
 
 function closeOverlay() {
