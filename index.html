@@ -5070,10 +5070,12 @@ window.addEventListener('load', () => {
         }, MAX_WAIT_TIME);
 
         // 原本的監聽器
+    if (video) {
         video.onended = function() {
             clearTimeout(backupTimer); // 如果正常結束，就清除計時器
             closeOverlay();
         };
+    }
 });
 
 function closeOverlay() {
