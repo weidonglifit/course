@@ -4841,15 +4841,21 @@ document.getElementById('teacherSearchInput').addEventListener('change', functio
     return;
   }
 
-  // 3. 檢查全域資料狀態
-  if (!allCourseData || allCourseData.length === 0) {
+  // 3. 安全合併「現有課程」與「過去課程」資料
+  // 確保如果陣列尚未載入(undefined)時，會以空陣列 [] 代替，避免程式報錯
+  const currentData = allCourseData || [];
+  const pastData = allCourseDataPast || [];
+  const combinedData = [...currentData, ...pastData];
+
+  // 檢查合併後的資料狀態
+  if (combinedData.length === 0) {
     resultDiv.innerHTML = "<div class='result-card-anim' style='color: orange; text-align:center;'>資料載入中，請稍候再試...</div>";
     return;
   }
 
-  // 4. 過濾並過度該老師的所有課程 (排除含有「★」的項目)
-  const filteredCourses = allCourseData.filter(c => 
-    c.name.includes(teacherName) && !c.name.includes('★')
+  // 4. 過濾出該老師的所有課程 (排除含有「★」的項目)
+  const filteredCourses = combinedData.filter(c => 
+    c.name && c.name.includes(teacherName) && !c.name.includes('★')
   );
 
   // 5. 渲染結果
@@ -4871,29 +4877,31 @@ document.getElementById('teacherSearchInput').addEventListener('change', functio
     
     filteredCourses.forEach(course => {
       // --- 1. 解析時間與名稱 (安全抓取，避免格式錯誤) ---
-const rawCourseName = course.name || "";
-const namePartsFull = rawCourseName.split(" ");
+      const rawCourseName = course.name || "";
+      const namePartsFull = rawCourseName.split(" ");
 
-// 課程名稱與老師 (例如: "Zumba-Grace")
-const nameTeacherPart = namePartsFull[0] || ""; 
-const subParts = nameTeacherPart.split("-");
-const cKey = (subParts[0] || "").trim().replace(/'/g, "\\'");
-const tKey = (subParts[1] || "").trim().replace(/'/g, "\\'");
+      // 課程名稱與老師 (例如: "Zumba-Grace")
+      const nameTeacherPart = namePartsFull[0] || ""; 
+      const subParts = nameTeacherPart.split("-");
+      const cKey = (subParts[0] || "").trim().replace(/'/g, "\\'");
+      const tKey = (subParts[1] || "").trim().replace(/'/g, "\\'");
 
-// 星期與時間段
-const weekText = (namePartsFull[1] || "").trim();
-const fullTimeStr = namePartsFull[2] || "";
-const tParts = fullTimeStr.split("-");
-const startTime = tParts[0] || "--:--";
-const endTime = tParts[1] || "--:--";
+      // 星期與時間段
+      const weekText = (namePartsFull[1] || "").trim();
+      const fullTimeStr = namePartsFull[2] || "";
+      const tParts = fullTimeStr.split("-");
+      const startTime = tParts[0] || "--:--";
+      const endTime = tParts[1] || "--:--";
 
-// --- 2. 計算價格與堂數
-const dateArray = course.dates.split(",").filter(s => s.trim() !== "");
-const totalClasses = dateArray.length;
-const totalPrice = totalClasses * (course.pricePerClass || 0);
+      // --- 2. 計算價格與堂數 (若有需要) ---
+      // 這裡確保 dates 有值才進行 split，避免 past data 結構不同造成錯誤
+      const rawDates = course.dates || "";
+      const dateArray = rawDates.split(",").filter(s => s.trim() !== "");
+      const totalClasses = dateArray.length;
+      const totalPrice = totalClasses * (course.pricePerClass || 0);
 
-// --- 3. 組裝定版 HTML (套用 result-card-anim 動畫) ---
-html += `
+      // --- 3. 組裝定版 HTML (套用 result-card-anim 動畫) ---
+      html += `
     <div class="course-card result-card-anim" onclick="openCombinedDrawer('${cKey}', '${tKey}', this)" style="cursor: pointer; margin-top: 10px;">
         <div class="card-inner">
             <div class="card-front" style="display: flex; align-items: center; padding: 15px; border-left: 6px solid #F4A7B9;">
@@ -5474,7 +5482,7 @@ function initCourseIntroDropdown() {
         const isOpening = allCourseData.some(course => course.name.includes(name));
         
         // 如果沒有在報名清單中，加上 (未開課) 標籤
-        const displayName = isOpening ? name : name + " (未開課)";
+        const displayName = isOpening ? name : name + "";
         
         option.value = name; // value 保持原名，方便後續對應資料庫
         option.text = displayName;
