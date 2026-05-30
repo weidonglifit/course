@@ -1535,26 +1535,47 @@
 .course-info div { color: #888; font-size: 0.85rem; }
 
 #opening-notice {
-    position: absolute; /* 相對於 video-overlay 定位 */
-    top: 7%;           /* 距離頂部 10% */
+    position: absolute; 
+    top: 7%;           
     left: 50%;
     transform: translateX(-50%);
-    z-index: 10001;     /* 高於影片層 */
-    background: linear-gradient(135deg, #F4A7B980 0%, #E87A9080 100%);
+    z-index: 10001;    
+    
+    /* 漸層半透明背景 */
+    background: linear-gradient(135deg, #F4A7B999 0%, #E87A9099 100%);
+    
+    /* 🌟 新增：毛玻璃特效 (背後的影片會被模糊，質感大升級) */
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    
+    /* 🌟 新增：Flexbox 讓 SVG 和文字完美置中對齊 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px; /* 圖示與文字的間距 */
+    
     color: white;
-    padding: 12px 20px;
+    padding: 10px 24px;
     border-radius: 50px;
-    font-size: 1.5rem;
-    font-weight: bold;
-    letter-spacing: 2px;
-    pointer-events: none; /* 點擊事件穿透，不影響影片操作 */
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    
+    /* 調整邊框陰影，加上一點內發光讓立體感更好 */
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15), inset 0 0 8px rgba(255,255,255,0.3);
+    
+    pointer-events: none; 
     white-space: nowrap; 
     width: auto;
     min-width: fit-content;
     
-    /* 動畫：由大縮小 + 淡入 */
     animation: opening-notice-anim 8s cubic-bezier(0.45, 0.05, 0.55, 0.95) forwards;
+}
+
+/* 針對文字的微調 */
+#opening-notice .notice-text {
+    font-size: 1.4rem;
+    font-weight: 900;
+    letter-spacing: 4px;
+    line-height: 1;
+    margin-bottom: 2px; /* 微調垂直視覺置中 */
 }
 
 @keyframes opening-notice-anim {
@@ -2144,7 +2165,14 @@
         <source src="https://github.com/weidonglifit/course/raw/refs/heads/main/wd5ss.mp4" type="video/mp4">
         您的瀏覽器不支援影片播放。
     </video>
-    <div id="opening-notice">WEI DONG</div>
+    <div id="opening-notice">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M3 12C7 6 11 6 15 12C19 18 21 16 22 14" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M3 17C6.5 13 9.5 13 13 17" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.6"/>
+            <path d="M12 7C14.5 4.5 17 4.5 19 7" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.6"/>
+        </svg>
+        <span class="notice-text">WEI DONG</span>
+    </div>
     <button id="skip-btn" onclick="closeOverlay()">Skip</button>
 </div>
 
