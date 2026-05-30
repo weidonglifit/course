@@ -1597,6 +1597,11 @@
     100% { transform: translate(-50%, 0) scale(1); /* 回到正常位置 */ }
 }
 
+    #opening-notice .notice-icon {
+    width: 28px;  /* 寬度：你可以根據 PNG 實際狀況微調大小 */
+    height: 28px; /* 高度：建議跟寬度一樣保持正方形比例 */
+    object-fit: contain; /* 確保圖片完整顯示，不會被擠壓變形 */
+}
 .notice-pulse-container {
     width: 100%; 
     background: linear-gradient(135deg, #FFF0F2 0%, #FFE5E9 100%); 
