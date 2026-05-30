@@ -2133,15 +2133,92 @@
 #qrcode-toggle-btn:active {
   transform: scale(0.92);
 }
+
+
+
+
+
+    /* 動畫容器：填滿整個 overlay */
+#intro-animation-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #000; /* 底色，可依需求改為 #fff */
+    overflow: hidden;
+}
+
+/* 共用圖片設定：疊在一起，預設隱藏，並且裁切填滿畫面 */
+.intro-img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover; 
+    opacity: 0; 
+}
+
+/* --- 動畫排程設定 --- */
+
+/* 第 1 張圖：由大到小淡入 (持續 1.5 秒) */
+.intro-img.img1 {
+    animation: zoomOutFadeIn 1.5s ease-out forwards;
+    z-index: 2;
+}
+
+/* 第 2 張圖：第 1.5 秒時開始，原地淡入 (持續 0.5 秒) */
+.intro-img.img2 {
+    animation: simpleFadeIn 0.5s ease-in forwards;
+    animation-delay: 1.5s; 
+    z-index: 3;
+}
+
+/* 第 3 張圖：第 2.0 秒時開始，原地淡入 (持續 0.5 秒) */
+.intro-img.img3 {
+    animation: simpleFadeIn 0.5s ease-in forwards;
+    animation-delay: 2.0s;
+    z-index: 4;
+}
+
+/* 第 4 張圖：第 2.5 秒時開始，原地淡入 (持續 0.5 秒) */
+.intro-img.img4 {
+    animation: simpleFadeIn 0.5s ease-in forwards;
+    animation-delay: 2.5s;
+    z-index: 5;
+}
+
+/* --- 動畫影格定義 (@keyframes) --- */
+
+/* 由大到小淡入 */
+@keyframes zoomOutFadeIn {
+    0% {
+        opacity: 0;
+        transform: scale(1.3); /* 初始放大 1.3 倍 */
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);   /* 回到原始比例 1 倍 */
+    }
+}
+
+/* 原地淡入 */
+@keyframes simpleFadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}
 </style>
 </head>
 <body>
 
 <div id="video-overlay">
-    <video id="intro-video" autoplay muted playsinline>
-        <source src="https://github.com/weidonglifit/course/raw/refs/heads/main/wd5ss.mp4" type="video/mp4">
-        您的瀏覽器不支援影片播放。
-    </video>
+    <div id="intro-animation-container">
+        <img class="intro-img img1" src="https://raw.githubusercontent.com/weidonglifit/course/refs/heads/main/wd1.jpg" alt="intro 1">
+        <img class="intro-img img2" src="https://raw.githubusercontent.com/weidonglifit/course/refs/heads/main/wd2.jpg" alt="intro 2">
+        <img class="intro-img img3" src="https://raw.githubusercontent.com/weidonglifit/course/refs/heads/main/wd3.jpg" alt="intro 3">
+        <img class="intro-img img4" src="https://raw.githubusercontent.com/weidonglifit/course/refs/heads/main/wd4.jpg" alt="intro 4">
+    </div>
     <div id="opening-notice">微動身活</div>
     <button id="skip-btn" onclick="closeOverlay()">Skip</button>
 </div>
