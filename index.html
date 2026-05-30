@@ -1578,6 +1578,11 @@
     margin-bottom: 2px; /* 微調垂直視覺置中 */
 }
 
+    #opening-notice .notice-icon {
+    width: auto;  /* 寬度：你可以根據 PNG 實際狀況微調大小 */
+    height: 28px; /* 高度：建議跟寬度一樣保持正方形比例 */
+    object-fit: contain; /* 確保圖片完整顯示，不會被擠壓變形 */
+}
 @keyframes opening-notice-anim {
     0% {
         opacity: 0;
@@ -2167,7 +2172,7 @@
         您的瀏覽器不支援影片播放。
     </video>
     <div id="opening-notice">
-        <span class="notice-text">WEI DONG</span>
+        <img src="https://raw.githubusercontent.com/weidonglifit/course/refs/heads/main/g-removebg-preview.png" alt="Logo" class="notice-icon">
     </div>
     <button id="skip-btn" onclick="closeOverlay()">Skip</button>
 </div>
