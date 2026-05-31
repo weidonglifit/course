@@ -2820,12 +2820,14 @@
 <div id="ai-chat-widget">
   <button id="ai-toggle-btn" onclick="let rot = parseInt(this.dataset.rot || 0) + 360; this.style.transform = 'rotate(' + rot + 'deg)'; this.dataset.rot = rot; toggleAIChat();" style="width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, #E87A90 0%, #D05A6E 100%); color: white; border: none; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); padding: 7px;">
   <svg width="50" height="50" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="16" cy="16" r="14" stroke="white" stroke-width="1.5" fill="none" />
-        <g transform="translate(4, 4) rotate(-45 12 12)">
-            <circle cx="16.5" cy="7.5" r="3.5" fill="white" />
-            <path d="M 3 13 Q 7.5 9, 12 13 T 21 13" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none" />
-        </g>
-    </svg> 
+    <circle cx="16" cy="16" r="14" stroke="white" stroke-width="1.5" fill="none" />
+    <g transform="translate(4, 4) rotate(-45 12 12)">
+        <circle cx="16.5" cy="7.5" r="3" fill="white" />
+        <path d="M 3 13 Q 7.5 9, 12 13 T 21 13" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+    </g>
+    <path d="M 23 17 Q 23 23, 29 23 Q 23 23, 23 29 Q 23 23, 17 23 Q 23 23, 23 17 Z" fill="white" />
+    <path d="M 27 13 Q 27 16, 30 16 Q 27 16, 27 19 Q 27 16, 24 16 Q 27 16, 27 13 Z" fill="white" />
+</svg>
 </button>
   
   <div id="ai-chat-box">
@@ -3905,11 +3907,11 @@ document.getElementById('queryBtn').addEventListener('click', function() {
               }
               if (item.period === "PAST") {
                 // 如果是前期歷史紀錄：改為莫蘭迪沉穩灰色調，不計算與顯示金額
-                primaryColor = "#95a5a6"; 
-                darkColor = "#7f8c8d";
+                primaryColor = "#D2A8B0";
+                darkColor = "#9C5E6D";
                 typeLabel = "⏳ 當期課程";
-                shadowStyle = "rgba(149, 165, 166, 0.3)";
-                bgGradient = "linear-gradient(135deg, #f8f9fa 0%, #e2e8f0 100%)";
+                shadowStyle = "rgba(156, 94, 109, 0.3)";
+                bgGradient = "linear-gradient(135deg, #F9F5F6 0%, #E6D5D8 100%)";
                 priceDisplayStr = `共 ${item.count} 堂 (本期預約)`;
                 paySt = "";
               } else if (item.type === "SINGLE") {
