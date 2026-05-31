@@ -594,20 +594,6 @@
     box-shadow: none; 
 }
 
-/* 當螢幕寬度大於 1024px 時（電腦版），才加入模糊柔邊 */
-@media (min-width: 1024px) {
-    #video-overlay::after {
-        box-shadow: inset 0 0 80px 40px #fff;
-    }
-}
-
-#intro-video {
-    min-width: 100%;
-    min-height: 100%;
-    object-fit: cover;
-    display: block;
-}
-
 /* 進階立體課程卡片 */
 /* 1. 最外層容器：設定 3D 深度感 */
 .course-card {
@@ -711,8 +697,8 @@
 
 /* 懸停效果：向上浮動 + 自動變亮 */
 .btn-universal:hover {
-    transform: translateY(-3px) scale(1.03);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+    /* transform: translateY(-3px) scale(1.03);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25); */
     filter: brightness(1.1); /* 自動提升背景亮度 10% */
 }
 
@@ -1626,7 +1612,7 @@
     text-align: center;
     
     /* 綁定慢速縮放呼吸動畫 */
-    //animation: soft-pulse 3s ease-in-out infinite;
+    /* animation: soft-pulse 3s ease-in-out infinite; */
 }
 
 /* 2. 提示框主標題 */
@@ -1677,7 +1663,7 @@
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
   text-align: center;
   /* 綁定與提示框相同的呼吸動畫，讓視覺更具一體感 */
-  //animation: soft-pulse 3s ease-in-out infinite;
+  /* animation: soft-pulse 3s ease-in-out infinite; */
 }
 
 .countdown-box {
@@ -2173,27 +2159,127 @@
 #qrcode-toggle-btn:active {
   transform: scale(0.92);
 }
+/* --- 1. 電影級攝影機推進特效 (Ken Burns Effect) --- */
+#intro-image-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('https://raw.githubusercontent.com/weidonglifit/course/refs/heads/main/wd44.jpg'); 
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    z-index: 1;
+    
+    /* 動畫核心：10秒持續緩慢放大，營造空間感與時間流動感 */
+    animation: cinematicPan 10s ease-out forwards;
+}
 
+/* --- 2. 質感漸層遮罩 --- */
+.overlay-mask {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* 使用深色漸層，讓白色的字體可以完美凸顯，也增加舞蹈教室的沉穩感 */
+    background: linear-gradient(135deg, rgba(44, 62, 80, 0.6) 0%, rgba(232, 122, 144, 0.4) 100%);
+    z-index: 2;
+}
 
+/* --- 動畫設定：從模糊甦醒到緩慢推進 --- */
+@keyframes cinematicPan {
+    0% {
+        transform: scale(1) translate(0, 0);
+        filter: blur(10px) brightness(0.7); /* 初始模糊，像剛睜開眼睛 */
+    }
+    15% {
+        filter: blur(0px) brightness(1); /* 約 1.5 秒後瞬間對焦，抓住注意力 */
+    }
+    100% {
+        transform: scale(1.15) translate(-1%, -1%); /* 緩慢放大 1.15 倍 */
+        filter: blur(0px) brightness(1);
+    }
+}
+
+/* --- 3. 呼吸感載入文字 --- */
+.loading-subtitle {
+    position: absolute;
+    top: calc(7% + 75px);
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10001;
+    font-size: 1.2rem;
+    letter-spacing: 3px;
+    color: #ffffff;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px; /* 這裡控制 SVG 圖示與文字之間的距離 */
+    white-space: nowrap; /* 確保圖示和文字不會斷成兩行 */
+    
+    animation: breathText 1.5s infinite ease-in-out;
+}
+
+@keyframes breathText {
+    0%, 100% { opacity: 0.4; text-shadow: none; }
+    50% { opacity: 1; text-shadow: 0 0 10px rgba(255,255,255,0.8); }
+}
+
+/* 定義敲擊時的微光外擴動畫 */
+@keyframes typePulse {
+    0% { 
+        box-shadow: 0 0 0 0 rgba(232, 122, 144, 0.4); 
+        border-color: #E87A90; 
+        transform: scale(1.01); /* 瞬間微幅放大 */
+    }
+    50% { 
+        box-shadow: 0 0 10px 4px rgba(232, 122, 144, 0.1); 
+    }
+    100% { 
+        box-shadow: 0 0 0 0 rgba(232, 122, 144, 0); 
+        border-color: #F4A7B9; 
+        transform: scale(1); /* 回歸原狀 */
+    }
+}
+
+/* 觸發動畫的 class */
+.typing-pulse-effect {
+    animation: typePulse 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+}
 </style>
 </head>
 <body>
 
 <div id="video-overlay">
-    <video id="intro-video" autoplay muted playsinline>
-        <source src="https://github.com/weidonglifit/course/raw/refs/heads/main/wd5ss.mp4" type="video/mp4">
-        您的瀏覽器不支援影片播放。
-    </video>
-    <div id="opening-notice">
+    <div id="intro-image-bg"></div>
+    
+    <div class="overlay-mask"></div>
+
+    <div id="opening-notice" style="display:none;">
         <svg width="34" height="34" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
           <circle cx="16" cy="16" r="14" stroke="white" stroke-width="1.5" fill="none" />
             <g transform="translate(4, 4) rotate(-45 12 12)">
-                <circle cx="16.5" cy="7.5" r="3.5" fill="white" />
-                <path d="M 3 13 Q 7.5 9, 12 13 T 21 13" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+              <circle cx="16.5" cy="7.5" r="3.5" fill="white" />
+              <path d="M 3 13 Q 7.5 9, 12 13 T 21 13" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none" />
             </g>
         </svg>
         <span class="notice-text">WEI DONG</span>
     </div>
+
+    <div class="loading-subtitle">
+    <svg width="24" height="24" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="16" cy="16" r="14" stroke="white" stroke-width="1.5" fill="none" />
+        <g transform="translate(4, 4) rotate(-45 12 12)">
+            <circle cx="16.5" cy="7.5" r="3.5" fill="white" />
+            <path d="M 3 13 Q 7.5 9, 12 13 T 21 13" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+        </g>
+    </svg>
+    <span id="loading-text-content">系統資料連線中...</span>
+</div>
+
     <button id="skip-btn" onclick="closeOverlay()">Skip</button>
 </div>
 
@@ -2502,14 +2588,14 @@
       <div class="field" style="flex: 1; margin-bottom: 0;">
           <span class="pink-highlight">請輸入報名電話</span>
         <input type="tel" id="realQueryPhone" placeholder="輸入電話查詢預約狀態" maxlength="10" pattern="\d{10}" 
-              style="width: 100%; border-radius: 20px 0 0 20px; height: 60px; box-sizing: border-box;">
+              style="width: 100%; border-radius: 30px 0 0 30px; height: 48px; box-sizing: border-box;">
       </div>
       <button type="button" 
             class="btn-universal" 
             id="queryBtn" 
             style="background: linear-gradient(135deg, #E87A90 0%, #D05A6E 100%); 
-                  width: 30%; height: 60px; margin: 0; 
-                  border-radius: 0 20px 20px 0; /* 銜接處設為直角 */
+                  width: 30%; height: 48px; margin: 0; 
+                  border-radius: 0 30px 30px 0; /* 銜接處設為直角 */
                   border: 1px solid #E87A90; border-left: none;">
       查詢報名
     </button>
@@ -2536,7 +2622,7 @@
             readonly 
             placeholder="🔍 點擊此處開啟期課課表..." 
             onclick="openQueryCourse()" 
-            style="width: 100%; border-radius: 20px; height: 60px; box-sizing: border-box; border: 1px solid #ccc; padding: 12px 15px; font-size: 16px; background-color: #ffffff; cursor: pointer; transition: background 0.2s;">
+            style="width: 100%; border-radius: 30px; height: 48px; box-sizing: border-box; border: 1px solid #ccc; padding: 12px 15px; font-size: 16px; background-color: #ffffff; cursor: pointer; transition: background 0.2s;">
             
       <div class="expand-content" id="queryCourseContent"></div>
     </div>
@@ -2557,7 +2643,7 @@
     
     <div class="wd-dropdown-container" id="customTeacherSearchDropdown">
       <div class="wd-dropdown-trigger" onclick="toggleCustomDropdown('customTeacherSearchDropdown')" 
-          style="border-radius: 20px; height: 60px; padding: 0 15px; display: flex; justify-content: space-between; align-items: center; cursor: pointer;">
+          style="border-radius: 30px; height: 48px; padding: 0 15px; display: flex; justify-content: space-between; align-items: center; cursor: pointer;">
         <span class="selected-text">正在載入老師名單...</span>
         <span class="arrow">▼</span>
       </div>
@@ -2607,7 +2693,7 @@
     <div class="field" style="flex: 1; margin-bottom: 0;">
         <span class="pink-highlight">請輸入預約電話</span>
       <input type="tel" id="queryRoomPhone" placeholder="輸入電話查詢教室預約紀錄" maxlength="10" 
-             style="width: 100%; border-radius: 20px 0 0 20px; height: 60px; box-sizing: border-box; border: 1px solid #ccc; font-size: 16px;">
+             style="width: 100%; border-radius: 30px 0 0 30px; height: 48px; box-sizing: border-box; border: 1px solid #ccc; font-size: 16px;">
     </div>
     
     <button type="button" 
@@ -2615,8 +2701,8 @@
         class="btn-universal" 
         onclick="handleRoomQuery()" 
         style="background: linear-gradient(135deg, #E87A90 0%, #D05A6E 100%); 
-               width: 30%; height: 60px; margin: 0; 
-               border-radius: 0 20px 20px 0; /* 銜接處設為直角 */
+               width: 30%; height: 48px; margin: 0; 
+               border-radius: 0 30px 30px 0; /* 銜接處設為直角 */
                border: 1px solid #E87A90; border-left: none;">
    查詢預約
 </button>
@@ -2633,7 +2719,7 @@
       <span class="pink-highlight">選擇教室</span>
     
     <div class="wd-dropdown-container" id="customRoomDropdown">
-      <div class="wd-dropdown-trigger" onclick="toggleCustomDropdown('customRoomDropdown')">
+      <div class="wd-dropdown-trigger" onclick="toggleCustomDropdown('customRoomDropdown')" style="border-radius: 30px;">
         <span class="selected-text">載入中...</span>
         <span class="arrow">▼</span>
       </div>
@@ -2648,7 +2734,7 @@
 
   <div class="field" id="dateSection">
       <span class="pink-highlight">選擇日期(一個月)</span>
-    <input type="text" id="roomDate" placeholder="請先選擇教室" style="height: 48px !important; border-radius: 8px !important;" readonly>
+    <input type="text" id="roomDate" placeholder="請先選擇教室" style="height: 48px !important; border-radius: 30px !important;" readonly>
   </div>
 
 
@@ -2666,7 +2752,7 @@
                     <span class="pink-highlight">預約時數</span>
                   
                   <div class="wd-dropdown-container" id="customDurationDropdown">
-                    <div class="wd-dropdown-trigger" onclick="toggleCustomDropdown('customDurationDropdown')">
+                    <div class="wd-dropdown-trigger" onclick="toggleCustomDropdown('customDurationDropdown')" style="border-radius: 30px;">
                       <span class="selected-text">-- 請先選擇教室 --</span>
                       <span class="arrow">▼</span>
                     </div>
@@ -2841,12 +2927,23 @@
 `;
   let aiStime = 0;
   let aiEtime = 0;
+  let textTimer;
   // 0. 網頁載入時，自動抓取後端試算表的課程清單填入下拉選單
 // 網頁載入時，直接透過整合函式抓取「全網頁所需的大禮包」
 window.addEventListener('load', function() {
   const startTime = performance.now(); 
   console.log("開始載入資料...");
-  
+  // 輪播載入狀態字，有效降低體感等待時間
+const loadingTexts = ["連線至微動身活...", "正在獲取最新課表...", "正在獲取最新課表....", "正在獲取資料...", "準備就緒..."];
+let textIdx = 0;
+const subtitleTextEl = document.getElementById('loading-text-content');
+
+if (subtitleTextEl) {
+    textTimer = setInterval(() => {
+        textIdx = (textIdx + 1) % loadingTexts.length;
+        subtitleTextEl.innerText = loadingTexts[textIdx];
+    }, 1500);
+}
   callGasApi("getAppInitData")
   .then(function(initData) {
     
@@ -5036,25 +5133,30 @@ window.addEventListener('load', () => {
     }
   }
   injectCommonRules();
-        const video = document.getElementById('intro-video');
-        const MAX_WAIT_TIME = 6000; // 設定最大等待時間（例如 10 秒）
 
-        // 啟動計時器
-        const backupTimer = setTimeout(() => {
-            console.log("保護機制觸發：影片可能卡住或未結束，強制關閉");
-            closeOverlay();
-        }, MAX_WAIT_TIME);
+  // 尋找所有的文字、電話、信箱輸入框
+  const textInputs = document.querySelectorAll('input[type="text"], input[type="tel"], input[type="email"]');
 
-        // 原本的監聽器
-   video.onended = function() {
-            clearTimeout(backupTimer); // 如果正常結束，就清除計時器
-            closeOverlay();
-        };
-        
+  textInputs.forEach(input => {
+      input.addEventListener('input', function() {
+          // 1. 先移除舊的 class，確保連續打字時動畫能重新觸發
+          this.classList.remove('typing-pulse-effect');
+          
+          // 2. 強制瀏覽器重繪 (Reflow) 
+          void this.offsetWidth; 
+          
+          // 3. 加上動畫 class
+          this.classList.add('typing-pulse-effect');
+      });
+  });
+               
    
 });
 
 function closeOverlay() {
+    if (textTimer) {
+        clearInterval(textTimer);
+    }
     const overlay = document.getElementById('video-overlay');
     if (overlay) {
         overlay.classList.add('exit-animation'); // 直接套用 CSS 動畫
@@ -5067,7 +5169,7 @@ function closeOverlay() {
         
         setTimeout(() => {
             overlay.style.display = 'none';
-        }, 800);
+        }, 800);        
     }
 }
 // 打開 QRCode 視窗
@@ -5734,20 +5836,7 @@ function initVenueList() {
 }
 
 
-const video = document.getElementById('intro-video');
-const skipBtn = document.getElementById('skip-btn');
 
-video.addEventListener('timeupdate', function() {
-    // 取得影片總時長
-    const duration = video.duration;
-    // 取得目前播放秒數
-    const currentTime = video.currentTime;
-
-    // 如果目前時間大於總時長的一半 (且 duration 不是 NaN)
-    if (duration > 0 && currentTime > ((duration * 2) / 3)) {
-        skipBtn.classList.add('show');
-    }
-});
 // 在你的 <script> 標籤內加入這一行即可
 document.addEventListener("touchstart", function() {}, true);
 
