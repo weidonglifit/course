@@ -2036,28 +2036,33 @@
 }
 
 /* 定義紙飛機飛出去並重置的動畫 */
-@keyframes fly-out {
-  0% {
-    transform: translate(0, 0);
-    opacity: 1;
+@keyframes fly-out-step {
+  0% { 
+    transform: translate(0, 0); 
+    opacity: 1; 
   }
-  50% {
-    transform: translate(25px, -25px); /* 往右上角飛出 */
-    opacity: 0.1; /* 同時漸隱 */
+  100% { 
+    transform: translate(25px, -25px); 
+    opacity: 0; 
   }
-  51% {
-    transform: translate(-25px, 25px); /* 在看不見的時候，瞬間移動到左下角 */
-    opacity: 0.1;
+}
+
+/* 後半段：單純負責從左下角出現並飛回正中央 */
+@keyframes fly-in-step {
+  0% { 
+    transform: translate(-25px, 25px); 
+    opacity: 0; 
   }
-  100% {
-    transform: translate(0, 0); /* 飛回正中央原位 */
-    opacity: 1;
+  100% { 
+    transform: translate(0, 0); 
+    opacity: 1; 
   }
 }
 
 /* 當按鈕加上 .is-flying 類別時，內部的 svg 執行飛行動畫 */
 .btn-send-paperplane.is-flying svg {
-  animation: fly-out 1s ease-out forwards;
+  fly-out-step 0.3s ease-in forwards,
+  fly-in-step 0.3s 0.3s ease-out forwards;
 }
 
 
