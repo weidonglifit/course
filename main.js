@@ -1,4 +1,4 @@
-<script>
+
   var canSubmitByQuota = false; // 用來記錄名額是否正常
   var canSubmitByPhone = false; // 用來記錄名額是否正常
   var roomPriceMap = {};
@@ -4049,4 +4049,4 @@ function toggleQuickMenu() {
     btn.classList.remove('active');
   }
 }
-</script>
+
