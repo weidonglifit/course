@@ -3247,49 +3247,64 @@ if (subtitleTextEl) {
     // 3. 處理跑馬燈邏輯
     // 💡 處理最新消息：支援換行、反光、10秒定時由下往上升高輪播
     const newsBoardEl = document.getElementById('news-board-content');
-    if (globalSettings.marqueeText && newsBoardEl) {
-      // 1. 將讀入的文字依照「換行符號」切分成陣列，並過濾掉空白行
-      const newsLines = globalSettings.marqueeText.split(/\r?\n/).map(line => line.trim()).filter(line => line !== "");
+if (globalSettings.marqueeText && newsBoardEl) {
+  // 1. 將讀入的文字依照「換行符號」切分成陣列，並過濾掉空白行
+  const newsLines = globalSettings.marqueeText.split(/\r?\n/).map(line => line.trim()).filter(line => line !== "");
+  
+  if (newsLines.length > 0) {
+    let currentLineIndex = 0;
+    
+    // ✨ 建立一個輔助函式，用來解析 [標籤] 並產生對應的 HTML
+    function getNewsHtml(line) {
+      let tagText = "NEWS"; // 預設標籤（防呆，萬一該行忘記打 [] 時顯示）
+      let messageText = line;
       
-      if (newsLines.length > 0) {
-        let currentLineIndex = 0;
-        
-        // ✨ 新增的 NEWS 標籤：粉底(使用一點漸層增加質感)、白字、左右半圓(border-radius)
-        const newsBadge = `<span style="background: linear-gradient(135deg, #FFD1DC 0%, #E87A90 100%); color: white; padding: 2px 7px; border-radius: 50px; font-size: 0.55em; font-weight: bold; margin-right: 5px; display: inline-block; vertical-align: middle; box-shadow: 0 2px 5px rgba(232, 122, 144, 0.2);">NEW</span>`;
-        
-        // 初始化顯示第一行 (注意：改成 innerHTML，並用 span 包住文字以對齊)
-        newsBoardEl.innerHTML = newsBadge + `<span style="vertical-align: middle;">${newsLines[currentLineIndex]}</span>`;
-        
-        // 2. 建立每 10 秒切換一行的核心計時器
-        setInterval(function() {
-          // A. 現有文字加上 .exit 類別往上滑出
-          newsBoardEl.classList.add('exit');
-          
-          setTimeout(function() {
-            // B. 計算下一行的索引，若到最後一行則歸零重複
-            currentLineIndex = (currentLineIndex + 1) % newsLines.length;
-            
-            // C. 改變文字內容，並將文字瞬間移到下方 (.enter 狀態)
-            // 注意：這裡也改成 innerHTML，讓每次動畫切換時都帶著 NEWS 標籤
-            newsBoardEl.innerHTML = newsBadge + `<span style="vertical-align: middle;">${newsLines[currentLineIndex]}</span>`;
-            newsBoardEl.classList.remove('exit');
-            newsBoardEl.classList.add('enter');
-            
-            // D. 強制瀏覽器重繪 (Reflow) 確保動畫平順
-            void newsBoardEl.offsetWidth;
-            
-            // E. 移除 .enter，讓文字順暢地從下方滑入置中到位
-            newsBoardEl.classList.remove('enter');
-          }, 600); // 600ms 剛好對應 CSS 退場動畫完成的時間
-          
-        }, 5000); // 10000ms 代表每 10 秒鐘換下一行
-        
-      } else {
-        newsBoardEl.parentNode.style.display = 'none';
+      // 使用正規表達式擷取開頭的 [標籤內容] 以及後面的 剩餘文字
+      const match = line.match(/^\[(.*?)\](.*)/);
+      if (match) {
+        tagText = match[1].trim(); // 取得中括號內的字 (例如: NEW, HOT, 報名)
+        messageText = match[2].trim(); // 取得中括號後面的字 (例如: 蝶谷巴特手做課程)
       }
-    } else if (newsBoardEl) {
-      newsBoardEl.parentNode.style.display = 'none';
+      
+      // 動態組裝 HTML：把 tagText 放入標籤中
+      const badgeHtml = `<span style="background: linear-gradient(135deg, #FFD1DC 0%, #E87A90 100%); color: white; padding: 2px 7px; border-radius: 50px; font-size: 0.55em; font-weight: bold; margin-right: 5px; display: inline-block; vertical-align: middle; box-shadow: 0 2px 5px rgba(232, 122, 144, 0.2);">${tagText}</span>`;
+      
+      return badgeHtml + `<span style="vertical-align: middle;">${messageText}</span>`;
     }
+    
+    // 初始化顯示第一行 (直接呼叫我們寫好的動態函式)
+    newsBoardEl.innerHTML = getNewsHtml(newsLines[currentLineIndex]);
+    
+    // 2. 建立計時器
+    setInterval(function() {
+      // A. 現有文字加上 .exit 類別往上滑出
+      newsBoardEl.classList.add('exit');
+      
+      setTimeout(function() {
+        // B. 計算下一行的索引，若到最後一行則歸零重複
+        currentLineIndex = (currentLineIndex + 1) % newsLines.length;
+        
+        // C. 改變文字內容，呼叫函式動態生成新的標籤與文字
+        newsBoardEl.innerHTML = getNewsHtml(newsLines[currentLineIndex]);
+        
+        newsBoardEl.classList.remove('exit');
+        newsBoardEl.classList.add('enter');
+        
+        // D. 強制瀏覽器重繪 (Reflow) 確保動畫平順
+        void newsBoardEl.offsetWidth;
+        
+        // E. 移除 .enter，讓文字順暢地從下方滑入置中到位
+        newsBoardEl.classList.remove('enter');
+      }, 600); // 600ms 剛好對應 CSS 退場動畫完成的時間
+      
+    }, 5000); // 每 5 秒鐘換下一行 (如果你要10秒，記得這裡改成 10000)
+    
+  } else {
+    newsBoardEl.parentNode.style.display = 'none';
+  }
+} else if (newsBoardEl) {
+  newsBoardEl.parentNode.style.display = 'none';
+}
 
     // 4. 配置折扣與早鳥日期參數
     globalDiscountRate = globalSettings.discount;
