@@ -12,7 +12,7 @@ var earlyBirdDiscount = 1;
 var globalAccountNumber = "";
 var globalSettings = {};
 var aiTomorrowWeatherText = "正在連線氣象局獲取最新預報中資訊...";
-var aiChatHistory = []; // 💡 用來儲存對話歷史紀錄的陣列，格式為 [{role: "user", content: "..."}, {role: "model", content: "..."}]
+var aiChatHistory = [];
 var aiStoreConfig = {
   "停車資訊": "300新竹市北區東大路537號對面停車場（步行3分鐘，公立停車場，非合作或特約）",
   "場館設施": "教室內備有冷熱飲水機、專屬男女更衣室以及置物櫃。為了維護舞蹈教室的木地板，進來上課請記得自備「乾淨的室內運動鞋」或換穿我們的室內拖鞋唷！",
@@ -34,11 +34,9 @@ let aiStime = 0;
 let aiEtime = 0;
 let textTimer;
 // 0. 網頁載入時，自動抓取後端試算表的課程清單填入下拉選單
-// 網頁載入時，直接透過整合函式抓取「全網頁所需的大禮包」
 window.addEventListener('load', function () {
   const startTime = performance.now();
   console.log("開始載入資料...");
-  // 輪播載入狀態字，有效降低體感等待時間
   const loadingTexts = ["連線至微動身活...", "正在載入期課課表...", "正在載入本月課表...", "正在讀取報名資料...", "正在讀取預約資料...", "準備就緒..."];
   let textIdx = 0;
   const subtitleTextEl = document.getElementById('loading-text-content');
@@ -70,6 +68,7 @@ window.addEventListener('load', function () {
         整期課程報名 (${globalSettings.title[1]})
       </span>
     `;
+    //<!--!Font Awesome Free v7.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.-->
       document.getElementById('single-course-title').innerHTML = `
       <span style="display: inline-flex; align-items: center; justify-content: center; gap: 8px;">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" style="width: 24px; height: 24px; fill: #D05A6E;">
@@ -78,59 +77,48 @@ window.addEventListener('load', function () {
         單堂課程報名 (${globalSettings.title[2]})
       </span>
     `;
+    //<!--!Font Awesome Free v7.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.-->
 
       // 3. 處理跑馬燈邏輯
-      // 💡 處理最新消息：支援換行、反光、10秒定時由下往上升高輪播
       const newsBoardEl = document.getElementById('news-board-content');
       if (globalSettings.marqueeText && newsBoardEl) {
-        // 1. 將讀入的文字依照「換行符號」切分成陣列，並過濾掉空白行
         const newsLines = globalSettings.marqueeText.split(/\r?\n/).map(line => line.trim()).filter(line => line !== "");
 
         if (newsLines.length > 0) {
           let currentLineIndex = 0;
 
-          // ✨ 建立一個輔助函式，用來解析 [標籤] 並產生對應的 HTML
           function getNewsHtml(line) {
-            let tagText = "NEWS"; // 預設標籤（防呆，萬一該行忘記打 [] 時顯示）
+            let tagText = "NEW";
             let messageText = line;
 
-            // 使用正規表達式擷取開頭的 [標籤內容] 以及後面的 剩餘文字
             const match = line.match(/^\[(.*?)\](.*)/);
             if (match) {
               tagText = match[1].trim(); // 取得中括號內的字 (例如: NEW, HOT, 報名)
               messageText = match[2].trim(); // 取得中括號後面的字 (例如: 蝶谷巴特手做課程)
             }
 
-            // 動態組裝 HTML：把 tagText 放入標籤中
             const badgeHtml = `<span style="background: linear-gradient(135deg, #FFD1DC 0%, #E87A90 100%); color: white; padding: 2px 7px; border-radius: 50px; font-size: 0.55em; font-weight: bold; margin-right: 5px; display: inline-block; vertical-align: middle; box-shadow: 0 2px 5px rgba(232, 122, 144, 0.2);">${tagText}</span>`;
 
             return badgeHtml + `<span style="vertical-align: middle;">${messageText}</span>`;
           }
 
-          // 初始化顯示第一行 (直接呼叫我們寫好的動態函式)
           newsBoardEl.innerHTML = getNewsHtml(newsLines[currentLineIndex]);
 
-          // 2. 建立計時器
           setInterval(function () {
-            // A. 現有文字加上 .exit 類別往上滑出
             newsBoardEl.classList.add('exit');
 
             setTimeout(function () {
-              // B. 計算下一行的索引，若到最後一行則歸零重複
               currentLineIndex = (currentLineIndex + 1) % newsLines.length;
 
-              // C. 改變文字內容，呼叫函式動態生成新的標籤與文字
               newsBoardEl.innerHTML = getNewsHtml(newsLines[currentLineIndex]);
 
               newsBoardEl.classList.remove('exit');
               newsBoardEl.classList.add('enter');
 
-              // D. 強制瀏覽器重繪 (Reflow) 確保動畫平順
               void newsBoardEl.offsetWidth;
 
-              // E. 移除 .enter，讓文字順暢地從下方滑入置中到位
               newsBoardEl.classList.remove('enter');
-            }, 600); // 600ms 剛好對應 CSS 退場動畫完成的時間
+            }, 600);
 
           }, 5000); // 每 5 秒鐘換下一行 (如果你要10秒，記得這裡改成 10000)
 
@@ -160,20 +148,17 @@ window.addEventListener('load', function () {
           const now = new Date().getTime();
           const distance = targetDate.getTime() - now;
 
-          // 2. 如果超過了目標時間，隱藏計時器並停止清除定時器
           if (distance < 0) {
             if (countdownContainer) countdownContainer.style.display = 'none';
             clearInterval(countdownInterval);
             return;
           }
 
-          // 3. 計算天、時、分、秒
           const days = Math.floor(distance / (1000 * 60 * 60 * 24));
           const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
           const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
           const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-          // 4. 補零優化並渲染到畫面上
           if (countdownContainer && countdownContainer.style.display === 'none') {
             countdownContainer.style.display = 'block'; // 確保時間未到時可見
           }
@@ -183,7 +168,6 @@ window.addEventListener('load', function () {
           if (sEl) sEl.innerText = String(seconds).padStart(2, '0');
         }
 
-        // 立即執行一次，防止每秒定時器產生 1 秒的初始化空白延遲
         updateCountdown();
         const countdownInterval = setInterval(updateCountdown, 1000);
       }
@@ -219,7 +203,6 @@ window.addEventListener('load', function () {
         if (initData.serverTime >= initData.openTimestamp) {
           var scheduleBody = document.getElementById('schedule-body');
           if (scheduleBody) {
-            // 將課表內容替換為漂亮的「課表準備中」提示框
             scheduleBody.innerHTML = `
             <div style="
               padding: 40px 20px; 
@@ -252,10 +235,9 @@ window.addEventListener('load', function () {
       const wallContainer = document.getElementById('popularWallContainer');
       if (wallSection && wallContainer) {
         if (initData.popularWallData && initData.popularWallData.length > 0) {
-          wallSection.style.display = 'block'; // 顯示外層牆面
+          wallSection.style.display = 'block';
           let wallHtml = '';
 
-          // 迴圈將每一天的狀態渲染成小卡
           initData.popularWallData.forEach(item => {
             wallHtml += `
             <div class="booking-wall-item" style="border-left: 5px solid ${item.color};">
@@ -268,7 +250,6 @@ window.addEventListener('load', function () {
           });
           wallContainer.innerHTML = wallHtml;
         } else {
-          // 沒有任何未來預約紀錄時，隱藏整個動態牆區塊 (因為空白牆面無法營造熱絡感)
           wallSection.style.display = 'none';
         }
       }
@@ -300,7 +281,6 @@ window.addEventListener('load', function () {
             img.src = url;
             img.className = 'photo-card';
             img.setAttribute('referrerpolicy', 'no-referrer');
-            // 👉 這裡不寫任何 onclick 屬性了，確保語法 100% 安全不卡死！
             picBody.appendChild(img);
           });
         } else {
@@ -316,7 +296,6 @@ window.addEventListener('load', function () {
     })
     .catch(function (error) {
       console.error("❌ 系統初始化失敗:", error);
-      // 可視需求在這裡加入讓使用者知道載入失敗的 UI 提示
     }); // 🔄 改為只呼叫這一個整合大禮包函式
 });
 
@@ -963,7 +942,12 @@ function askEmergencyContactSingle(baseData, btn, output, isSingleCourse) {
  */
 function executeSingleSubmit(baseData, emergencyInfo, btn, output) {
   btn.disabled = true;
-  btn.innerText = "提交中...";
+  btn.innerHTML = `
+    <svg class="fly-out-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" width="1.4em" height="1.4em" style="vertical-align: middle; margin-right: 8px;">
+      <path fill="white" d="M125.4 128C91.5 128 64 155.5 64 189.4C64 190.3 64 191.1 64.1 192L64 192L64 448C64 483.3 92.7 512 128 512L512 512C547.3 512 576 483.3 576 448L576 192L575.9 192C575.9 191.1 576 190.3 576 189.4C576 155.5 548.5 128 514.6 128L125.4 128zM528 256.3L528 448C528 456.8 520.8 464 512 464L128 464C119.2 464 112 456.8 112 448L112 256.3L266.8 373.7C298.2 397.6 341.7 397.6 373.2 373.7L528 256.3zM112 189.4C112 182 118 176 125.4 176L514.6 176C522 176 528 182 528 189.4C528 193.6 526 197.6 522.7 200.1L344.2 335.5C329.9 346.3 310.1 346.3 295.8 335.5L117.3 200.1C114 197.6 112 193.6 112 189.4z"/>
+    </svg>
+  `;
+  //<!--!Font Awesome Free v7.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.-->
   output.style.color = "#34495e";
   output.innerText = "正在處理報名資料...";
 
@@ -973,10 +957,8 @@ function executeSingleSubmit(baseData, emergencyInfo, btn, output) {
   ];
 
   // 2. 改為呼叫後端的 processBatchForm 進入同一個 LOCK 排隊
-  // 將原本的三個參數，用陣列 [ ] 包起來一起傳給後端
   callGasApi("processBatchForm", [baseData, singleParticipantList, emergencyInfo])
     .then(function () {
-      // 成功後一樣執行 finalizeBatch，傳入 1 代表完成 1 人報名
       finalizeBatch(1, 1, btn, output);
     })
     .catch(function (err) {
@@ -986,7 +968,7 @@ function executeSingleSubmit(baseData, emergencyInfo, btn, output) {
       output.innerText = "❌ 提交失敗：" + errorMsg;
       btn.disabled = false;
       btn.innerText = "提交報名";
-    }); // 這裡改呼叫 Batch 函式
+    });
 }
 
 // 輔助函式：切換手風琴展開
@@ -1797,7 +1779,12 @@ function submitRoomData() {
 
   const originalBtnText = "送出教室預約";
   btn.disabled = true;
-  btn.innerText = "正在提交預約...";
+  btn.innerHTML = `
+    <svg class="fly-out-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" width="1.4em" height="1.4em" style="vertical-align: middle; margin-right: 8px;">
+      <path fill="white" d="M125.4 128C91.5 128 64 155.5 64 189.4C64 190.3 64 191.1 64.1 192L64 192L64 448C64 483.3 92.7 512 128 512L512 512C547.3 512 576 483.3 576 448L576 192L575.9 192C575.9 191.1 576 190.3 576 189.4C576 155.5 548.5 128 514.6 128L125.4 128zM528 256.3L528 448C528 456.8 520.8 464 512 464L128 464C119.2 464 112 456.8 112 448L112 256.3L266.8 373.7C298.2 397.6 341.7 397.6 373.2 373.7L528 256.3zM112 189.4C112 182 118 176 125.4 176L514.6 176C522 176 528 182 528 189.4C528 193.6 526 197.6 522.7 200.1L344.2 335.5C329.9 346.3 310.1 346.3 295.8 335.5L117.3 200.1C114 197.6 112 193.6 112 189.4z"/>
+    </svg>
+  `;
+  //<!--!Font Awesome Free v7.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.-->
   btn.style.backgroundColor = "#E87A90"; // 變灰色
   btn.style.cursor = "not-allowed";
 
@@ -2651,7 +2638,12 @@ function submitSingleForm() {
 function executeSingleCourseSubmit(data, emergencyInfo, btn, output) {
   if (btn) {
     btn.disabled = true;
-    btn.innerText = "提交中...";
+    btn.innerHTML = `
+      <svg class="fly-out-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" width="1.4em" height="1.4em" style="vertical-align: middle; margin-right: 8px;">
+        <path fill="white" d="M125.4 128C91.5 128 64 155.5 64 189.4C64 190.3 64 191.1 64.1 192L64 192L64 448C64 483.3 92.7 512 128 512L512 512C547.3 512 576 483.3 576 448L576 192L575.9 192C575.9 191.1 576 190.3 576 189.4C576 155.5 548.5 128 514.6 128L125.4 128zM528 256.3L528 448C528 456.8 520.8 464 512 464L128 464C119.2 464 112 456.8 112 448L112 256.3L266.8 373.7C298.2 397.6 341.7 397.6 373.2 373.7L528 256.3zM112 189.4C112 182 118 176 125.4 176L514.6 176C522 176 528 182 528 189.4C528 193.6 526 197.6 522.7 200.1L344.2 335.5C329.9 346.3 310.1 346.3 295.8 335.5L117.3 200.1C114 197.6 112 193.6 112 189.4z"/>
+      </svg>
+    `;
+    //<!--!Font Awesome Free v7.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.-->
   }
   output.style.color = "#34495e";
   output.innerText = "正在處理單堂報名資料...";
