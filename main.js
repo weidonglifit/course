@@ -3135,8 +3135,9 @@ function openExpandedCourse() {
 
   if (!container || !contentBox || !sourceTable) return;
 
-  // ✨ 關鍵修復 1：將彈窗移到 body 最外層，徹底擺脫所有父層級的限制！
   document.body.appendChild(container);
+  const overlay = getOrCreateExpandOverlay();
+  overlay.classList.add('show');
 
   contentBox.innerHTML = sourceTable.innerHTML;
   container.classList.add('expanded');
@@ -3155,6 +3156,8 @@ function closeExpandedCourse(event) {
   if (event) event.stopPropagation();
 
   const container = document.getElementById('expandInputContainer');
+  const overlay = document.getElementById('expandSharedOverlay');
+  if (overlay) overlay.classList.remove('show');
   if (container) {
     container.style.transform = "";
     container.style.animation = "expandFlipOut 0.3s cubic-bezier(0.25, 1, 0.5, 1) forwards";
@@ -3177,19 +3180,16 @@ function openQueryCourse() {
   const container = document.getElementById('queryInputContainer');
   const contentBox = document.getElementById('queryCourseContent');
   const sourceTable = document.getElementById('schedule-content');
-  const inputEl = document.getElementById('itemQueryName');
+  
   if (!container || !contentBox || !sourceTable) return;
 
-  // ✨ 關鍵修復 3：移到 body 最外層
   document.body.appendChild(container);
+  const overlay = getOrCreateExpandOverlay();
+  overlay.classList.add('show');
 
   contentBox.innerHTML = sourceTable.innerHTML;
   container.classList.add('expanded');
   document.body.style.overflow = 'hidden';
-
-  if (inputEl) {
-    inputEl.style.display = 'none';
-  }
 
   setTimeout(function () {
     container.style.animation = "expandFlipIn 0.4s cubic-bezier(0.25, 1, 0.5, 1) forwards";
@@ -3202,7 +3202,8 @@ function openQueryCourse() {
 
 function closeQueryCourse(event) {
   if (event) event.stopPropagation();
-  const inputEl = document.getElementById('itemQueryName');
+  const overlay = document.getElementById('expandSharedOverlay');
+  if (overlay) overlay.classList.remove('show');
   const container = document.getElementById('queryInputContainer');
 
   if (container) {
@@ -3213,12 +3214,8 @@ function closeQueryCourse(event) {
       container.style.animation = "";
       document.body.style.overflow = '';
 
-      // ✨ 關鍵修復 4：放回原本的查詢包裝層裡面
       document.getElementById('queryCourseWrapper').appendChild(container);
 
-      if (inputEl) {
-        inputEl.style.display = 'block';
-      }
     }, 350);
   }
 }
@@ -4096,4 +4093,24 @@ function executeQuickJump(actionType) {
       targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   }
+}
+
+function getOrCreateExpandOverlay() {
+  let overlay = document.getElementById('expandSharedOverlay');
+  if (!overlay) {
+    overlay = document.createElement('div');
+    overlay.id = 'expandSharedOverlay';
+    overlay.className = 'expand-overlay';
+    // 點擊背景也能順便關閉
+    overlay.onclick = function() {
+      if (document.getElementById('expandInputContainer')?.classList.contains('expanded')) {
+        closeExpandedCourse();
+      }
+      if (document.getElementById('queryInputContainer')?.classList.contains('expanded')) {
+        closeQueryCourse();
+      }
+    };
+    document.body.appendChild(overlay);
+  }
+  return overlay;
 }
