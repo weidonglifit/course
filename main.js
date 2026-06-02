@@ -1077,7 +1077,7 @@ document.getElementById('queryBtn').addEventListener('click', function () {
   }
 
   btn.disabled = true;
-  btn.innerHTML = '<div class="loader"></div>';
+  btn.innerHTML = '<svg class="walking-circle" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><path fill="white" d="M480 272C480 317.9 465.1 360.3 440 394.7L566.6 521.4C579.1 533.9 579.1 554.2 566.6 566.7C554.1 579.2 533.8 579.2 521.3 566.7L394.7 440C360.3 465.1 317.9 480 272 480C157.1 480 64 386.9 64 272C64 157.1 157.1 64 272 64C386.9 64 480 157.1 480 272zM272 416C351.5 416 416 351.5 416 272C416 192.5 351.5 128 272 128C192.5 128 128 192.5 128 272C128 351.5 192.5 416 272 416z"/></svg>';
   resultDiv.innerText = "";
 
   callGasApi("queryRegistration", [phone])
@@ -1220,14 +1220,14 @@ document.getElementById('queryBtn').addEventListener('click', function () {
       }
 
       btn.disabled = false;
-      btn.innerText = "立即查詢";
+      btn.innerText = "查詢";
     })
     .catch(function (err) {
       // 增加防呆：處理網路錯誤或伺服器錯誤，避免按鈕永久卡住
       const errorMsg = err.message || err;
       resultDiv.innerHTML = `<div style="color: red; text-align: center; padding: 20px;">❌ 查詢失敗：${errorMsg}</div>`;
       btn.disabled = false;
-      btn.innerText = "立即查詢";
+      btn.innerText = "查詢";
     });
 });
 
@@ -1506,7 +1506,8 @@ function fetchRoomStatus() {
     "11:00-11:30", "11:30-12:00", "12:00-12:30", "12:30-13:00", "13:00-13:30", "13:30-14:00",
     "14:00-14:30", "14:30-15:00", "15:00-15:30", "15:30-16:00",
     "16:00-16:30", "16:30-17:00", "17:00-17:30", "17:30-18:00",
-    "18:00-18:30", "18:30-19:00", "19:00-19:30", "19:30-20:00", "20:00-20:30", "20:30-21:00"
+    "18:00-18:30", "18:30-19:00", "19:00-19:30", "19:30-20:00",
+    "20:00-20:30", "20:30-21:00", "21:00-21:30", "21:30-22:00"
   ];
 
   let localStatusGrid = timeSlots.map(slot => ({ time: slot, status: "可預約" }));
@@ -1856,7 +1857,7 @@ function updatePriceList() {
   durationSelect.innerHTML = "";
 
   // 動態產生 1-6 小時的選項
-  for (let i = 1; i <= 12; i++) {
+  for (let i = 1; i <= 13; i++) {
     const opt = document.createElement('option');
     opt.value = i;
     // 顯示格式：1 小時 (1000元)
@@ -1969,7 +1970,7 @@ function handleRoomQuery() {
   }
 
   // 1. 查詢開始：按鈕禁用，顯示查詢中狀態
-  btn.innerHTML = '<div class="loader"></div>';
+  btn.innerHTML = '<svg class="walking-circle" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><path fill="white" d="M480 272C480 317.9 465.1 360.3 440 394.7L566.6 521.4C579.1 533.9 579.1 554.2 566.6 566.7C554.1 579.2 533.8 579.2 521.3 566.7L394.7 440C360.3 465.1 317.9 480 272 480C157.1 480 64 386.9 64 272C64 157.1 157.1 64 272 64C386.9 64 480 157.1 480 272zM272 416C351.5 416 416 351.5 416 272C416 192.5 351.5 128 272 128C192.5 128 128 192.5 128 272C128 351.5 192.5 416 272 416z"/></svg>';
   btn.disabled = true;
   btn.style.backgroundColor = "#E87A90";
   btn.style.cursor = "not-allowed";
@@ -1979,7 +1980,7 @@ function handleRoomQuery() {
   callGasApi("queryRoomReservation", [phone])
     .then(function (res) {
       // 2. 查詢完畢：恢復按鈕狀態 
-      btn.innerText = "查詢預約";
+      btn.innerText = "查詢";
       btn.disabled = false;
       btn.style.backgroundColor = "#E87A90";
       btn.style.cursor = "pointer";
