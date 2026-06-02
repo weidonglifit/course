@@ -377,7 +377,15 @@ function renderCurrentCoursesUI(courses) {
 
   // 渲染大課表手風琴 (整期)
   if (scheduleBody) {
+    let termText = globalSettings?.title?.[1] || "";
     let accordionHtml = '<div class="accordion-container">';
+    if (termText) {
+      accordionHtml += `
+        <div style="text-align: center; padding: 10px 0 15px 0; color: #d14d72; font-weight: bold; font-size: 1.25em; letter-spacing: 2px;">
+          ${termText}
+        </div>
+      `;
+    }
     days.forEach((day, index) => {
       const dayCourses = courses.filter(c => c.name.includes(day) && !c.name.includes('★'));
       accordionHtml += `
@@ -755,7 +763,15 @@ function collectNextParticipant(currentIdx, totalCount, list, baseData, btn, out
 function renderAccordionSchedule(courseSource, containerElement, type) {
   const days = ["週一", "週二", "週三", "週四", "週五", "週六", "週日"];
   const englishDays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+  let termText = globalSettings?.title?.[2] || "";
   let accordionHtml = '<div class="accordion-container">';
+  if (termText) {
+    accordionHtml += `
+      <div style="text-align: center; padding: 10px 0 15px 0; color: #d14d72; font-weight: bold; font-size: 1.25em; letter-spacing: 2px;">
+        ${termText}
+      </div>
+    `;
+  }
 
   days.forEach((day, index) => {
     // 過濾屬於該天且不含系統標記的課程
@@ -1313,7 +1329,7 @@ document.getElementById('itemQueryName').addEventListener('change', function () 
 
                   <div style="flex: 1; text-align: left; min-width: 0;">
                       <div class="card-title" style="margin-bottom: 4px; font-weight: bold; color: #d14d72; font-size: 1.1em;">
-                          📌 ${nameTeacherPart}
+                          ${nameTeacherPart}
                       </div>
                       <div class="card-detail" style="font-size: 0.9em; color: #555;">日期：${dateString}</div>
                       <div class="card-detail" style="color: #e74c3c; font-weight: bold; margin-top: 6px; font-size: 0.95em;">
@@ -2245,10 +2261,13 @@ document.getElementById('teacherSearchInput').addEventListener('change', functio
     return;
   }
 
+  let allCourseText = globalSettings?.title?.[1] || "";
+  let singleCourseText = globalSettings?.title?.[2] || "";
+
   // 3. 安全合併「現有課程」與「過去課程」資料
   // 確保如果陣列尚未載入(undefined)時，會以空陣列 [] 代替，避免程式報錯
-  const currentData = allCourseData || [];
-  const pastData = allCourseDataPast || [];
+  const currentData = (allCourseData || []).map(c => ({ ...c, courseType: '期課課程' }));
+  const pastData = (allCourseDataPast || []).map(c => ({ ...c, courseType: '本月課程' }));
   const combinedData = [...currentData, ...pastData];
 
   // 檢查合併後的資料狀態
@@ -2303,6 +2322,9 @@ document.getElementById('teacherSearchInput').addEventListener('change', functio
       const dateArray = rawDates.split(",").filter(s => s.trim() !== "");
       const totalClasses = dateArray.length;
       const totalPrice = totalClasses * (course.pricePerClass || 0);
+      const tagBgColor = course.courseType === '期課課程' ? '#d14d72' : '#f089a1';
+      const displayTagText = (course.courseType === '期課課程') ? allCourseText : singleCourseText;
+      const tagHtml = `<span style="background: ${tagBgColor}; color: white; padding: 3px 8px; border-radius: 4px; font-size: 0.75em; margin-right: 6px; white-space: nowrap;">${displayTagText}</span>`;
 
       // --- 3. 組裝定版 HTML (套用 result-card-anim 動畫) ---
       html += `
@@ -2342,8 +2364,9 @@ document.getElementById('teacherSearchInput').addEventListener('change', functio
                 </div>
 
                 <div style="flex: 1; text-align: left; min-width: 0;">
-                    <div class="card-title" style="margin-bottom: 4px; font-weight: bold; color: #d14d72; font-size: 1.1em;">
-                        📌 ${cKey}
+                    <div class="card-title" style="margin-bottom: 4px; font-weight: bold; color: #d14d72; font-size: 1.1em; display: flex; flex-direction: column; align-items: flex-start; gap: 6px;">
+                        ${tagHtml}
+                        <span>${cKey}</span>
                     </div>
                     <small style="color: #f089a1; display: block; margin-top: 6px;">點擊查看課程與老師簡介 ➔</small>
                 </div>
