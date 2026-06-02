@@ -196,7 +196,7 @@ window.addEventListener('load', function () {
         const priceDisplay = document.getElementById('room-price-display');
         if (priceDisplay) { priceDisplay.innerHTML = priceHtml; }
       }
-      syncToCustomRoomDropdown();
+      buildCustomDropdown('roomSelect', 'customRoomDropdown', 'customRoomMenu', '--選擇教室--');
 
       // 7. 💡 渲染「當期整期課表表單與手風琴」
       if (initData.openTimestamp) {
@@ -256,7 +256,8 @@ window.addEventListener('load', function () {
       // 9. 💡 初始化「單堂下拉選單」與「查詢老師下拉選單」
       initSingleCourseDropdown();
       renderTeacherDropdownUI(initData.teachers);
-      syncToCustomTeacherSearchDropdown();
+      buildCustomDropdown('teacherSearchInput', 'customTeacherSearchDropdown', 'customTeacherSearchMenu', '-- 請選擇老師 --');
+      buildCustomDropdown('participantCount', 'customParticipantDropdown', 'customParticipantMenu', '1 人');
 
       // 10. 💡 判斷單堂課程報名是否開放與分頁引導限制
       if (initData.openTimestamp) {
@@ -565,7 +566,7 @@ document.getElementById('regForm').addEventListener('submit', function (e) {
   baseData["items"] = selectedItems;
 
   if (pCount > 1) {
-    baseData.email = baseData.email + "(" + baseData.name + ")";
+    baseData.lineId = baseData.lineId + "(" + baseData.name + ")";
   }
 
   let participants = [{ name: baseData.name, phone: baseData.phone }];
@@ -824,11 +825,11 @@ function executeBatchSubmit(list, baseData, btn, output) {
   const btnText = list.length > 1 ? `提交中 (${list.length}人)...` : "提交中...";
   //btn.innerText = btnText;
   btn.innerHTML = `
-    <svg class="fly-out-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" width="1.4em" height="1.4em" style="vertical-align: middle; margin-right: 8px;">
-      <path fill="white" d="M125.4 128C91.5 128 64 155.5 64 189.4C64 190.3 64 191.1 64.1 192L64 192L64 448C64 483.3 92.7 512 128 512L512 512C547.3 512 576 483.3 576 448L576 192L575.9 192C575.9 191.1 576 190.3 576 189.4C576 155.5 548.5 128 514.6 128L125.4 128zM528 256.3L528 448C528 456.8 520.8 464 512 464L128 464C119.2 464 112 456.8 112 448L112 256.3L266.8 373.7C298.2 397.6 341.7 397.6 373.2 373.7L528 256.3zM112 189.4C112 182 118 176 125.4 176L514.6 176C522 176 528 182 528 189.4C528 193.6 526 197.6 522.7 200.1L344.2 335.5C329.9 346.3 310.1 346.3 295.8 335.5L117.3 200.1C114 197.6 112 193.6 112 189.4z"/>
-    </svg>
-  `;
-  //<!--!Font Awesome Free v7.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.-->
+      <svg class="fly-out-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" width="1.4em" height="1.4em" style="vertical-align: middle; margin-right: 8px;">
+        <path fill="white" d="M125.4 128C91.5 128 64 155.5 64 189.4C64 190.3 64 191.1 64.1 192L64 192L64 448C64 483.3 92.7 512 128 512L512 512C547.3 512 576 483.3 576 448L576 192L575.9 192C575.9 191.1 576 190.3 576 189.4C576 155.5 548.5 128 514.6 128L125.4 128zM528 256.3L528 448C528 456.8 520.8 464 512 464L128 464C119.2 464 112 456.8 112 448L112 256.3L266.8 373.7C298.2 397.6 341.7 397.6 373.2 373.7L528 256.3zM112 189.4C112 182 118 176 125.4 176L514.6 176C522 176 528 182 528 189.4C528 193.6 526 197.6 522.7 200.1L344.2 335.5C329.9 346.3 310.1 346.3 295.8 335.5L117.3 200.1C114 197.6 112 193.6 112 189.4z"/>
+      </svg>
+    `;
+    //<!--!Font Awesome Free v7.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.-->
 
   output.style.color = "#34495e";
   output.innerText = "正在處理報名資料，請稍候...";
@@ -1871,7 +1872,7 @@ function updatePriceList() {
     opt.text = i + " 小時 (" + (price * i) + "元)";
     durationSelect.appendChild(opt);
   }
-  syncToCustomDurationDropdown();
+  buildCustomDropdown('durationSelect', 'customDurationDropdown', 'customDurationMenu', '-- 請先選擇教室 --');
   // 更新價格後，也要同步更新「可預約開始時間」選單
   updateAvailableTimes();
 }
@@ -2938,7 +2939,7 @@ function initCourseIntroDropdown() {
     option.text = displayName;
     select.appendChild(option);
   });
-  syncToCustomDropdown();
+  buildCustomDropdown('courseIntroSelect', 'customCourseIntroDropdown', 'customCourseIntroMenu', '-- 請選擇課程 --');
 }
 
 /**
@@ -2990,7 +2991,7 @@ function initTeacherDropdown() {
     option.text = teacher.name;
     select.appendChild(option);
   });
-  syncToCustomTeacherDropdown();
+  buildCustomDropdown('teacherSelect', 'customTeacherDropdown', 'customTeacherMenu', '-- 請選擇老師 --');
 }
 
 /**
@@ -3251,168 +3252,18 @@ function toggleCustomDropdown(containerId) {
 }
 
 // 2. 當後端撈完資料填入真實 select 後，呼叫此函式將選項複製一份到美化選單中
-function syncToCustomDropdown() {
-  const realSelect = document.getElementById('courseIntroSelect');
-  const customMenu = document.getElementById('customCourseIntroMenu');
-  const triggerText = document.querySelector('#customCourseIntroDropdown .selected-text');
-
-  if (!realSelect || !customMenu) return;
-
-  // 清空舊有的自製清單，並重設標題
-  customMenu.innerHTML = "";
-  triggerText.innerText = "-- 請選擇課程 --";
-
-  // 撈取真實 select 裡面的所有 options
-  Array.from(realSelect.options).forEach(opt => {
-    const li = document.createElement('li');
-    li.className = 'wd-dropdown-item';
-    li.innerText = opt.text;
-
-    // 如果該課程在原始後端邏輯中被設定為禁用（例如未開課）
-    if (opt.disabled) {
-      li.classList.add('disabled');
-    } else {
-      // 綁定點擊事件
-      li.onclick = function () {
-        // A. 更新觸發框的顯示文字
-        triggerText.innerText = opt.text;
-        // B. 同步選取真實的 select 值
-        realSelect.value = opt.value;
-        // C. 觸發真實選單原本綁定的 onChange 網頁更新動作！
-        realSelect.dispatchEvent(new Event('change'));
-        // D. 收起選單
-        document.getElementById('customCourseIntroDropdown').classList.remove('open');
-      };
-    }
-    customMenu.appendChild(li);
-  });
-}
-
-// 新增：當後端撈完資料填入真實 teacherSelect 後，同步複製到美化選單中
-function syncToCustomTeacherDropdown() {
-  const realSelect = document.getElementById('teacherSelect');
-  const customMenu = document.getElementById('customTeacherMenu');
-  const triggerText = document.querySelector('#customTeacherDropdown .selected-text');
-
-  if (!realSelect || !customMenu) return;
-
-  // 清空舊有的自製清單，並重設標題
-  customMenu.innerHTML = "";
-  triggerText.innerText = "-- 請選擇老師 --";
-
-  // 撈取真實 select 裡面的所有 options
-  Array.from(realSelect.options).forEach(opt => {
-    const li = document.createElement('li');
-    li.className = 'wd-dropdown-item';
-    li.innerText = opt.text;
-
-    // 如果該選項在原始邏輯中被設定為禁用
-    if (opt.disabled) {
-      li.classList.add('disabled');
-    } else {
-      // 綁定點擊事件
-      li.onclick = function () {
-        // A. 更新觸發框的顯示文字
-        triggerText.innerText = opt.text;
-        // B. 同步選取真實的 select 值
-        realSelect.value = opt.value;
-        // C. 觸發真實選單原本綁定的 onChange（即 displayTeacherIntro）
-        realSelect.dispatchEvent(new Event('change'));
-        // D. 收起選單
-        document.getElementById('customTeacherDropdown').classList.remove('open');
-      };
-    }
-    customMenu.appendChild(li);
-  });
-}
-
-// 新增：當後端或初始化將資料填入真實 roomSelect 後，同步複製到美化選單中
-function syncToCustomRoomDropdown() {
-  const realSelect = document.getElementById('roomSelect');
-  const customMenu = document.getElementById('customRoomMenu');
-  const triggerText = document.querySelector('#customRoomDropdown .selected-text');
-
-  if (!realSelect || !customMenu) return;
-
-  // 清空舊有的自製清單
-  customMenu.innerHTML = "";
-
-  // 根據真實 select 的當前選取值，初始化觸發框的文字
-  const selectedOpt = realSelect.options[realSelect.selectedIndex];
-  triggerText.innerText = selectedOpt ? selectedOpt.text : "載入中...";
-
-  // 撈取真實 select 裡面的所有 options
-  Array.from(realSelect.options).forEach(opt => {
-    const li = document.createElement('li');
-    li.className = 'wd-dropdown-item';
-    li.innerText = opt.text;
-
-    if (opt.disabled) {
-      li.classList.add('disabled');
-    } else {
-      // 綁定點擊事件
-      li.onclick = function () {
-        // A. 更新觸發框的顯示文字
-        triggerText.innerText = opt.text;
-        // B. 同步選取真實的 select 值
-        realSelect.value = opt.value;
-        // C. 觸發真實選單原本綁定的 onChange（即 checkDateTrigger）
-        realSelect.dispatchEvent(new Event('change'));
-        // D. 收起選單
-        document.getElementById('customRoomDropdown').classList.remove('open');
-      };
-    }
-    customMenu.appendChild(li);
-  });
-}
-
-// 新增：當後端或前面步驟將時數填入真實 durationSelect 後，同步複製到美化選單中
-function syncToCustomDurationDropdown() {
-  const realSelect = document.getElementById('durationSelect');
-  const customMenu = document.getElementById('customDurationMenu');
-  const triggerText = document.querySelector('#customDurationDropdown .selected-text');
-
-  if (!realSelect || !customMenu) return;
-
-  // 清空舊有的自製清單
-  customMenu.innerHTML = "";
-
-  // 根據真實 select 的當前選取值，初始化觸發框的文字
-  const selectedOpt = realSelect.options[realSelect.selectedIndex];
-  triggerText.innerText = selectedOpt ? selectedOpt.text : "-- 請先選擇教室 --";
-
-  // 撈取真實 select 裡面的所有 options
-  Array.from(realSelect.options).forEach(opt => {
-    const li = document.createElement('li');
-    li.className = 'wd-dropdown-item';
-    li.innerText = opt.text;
-
-    if (opt.disabled) {
-      li.classList.add('disabled');
-    } else {
-      // 綁定點擊事件
-      li.onclick = function () {
-        // A. 更新觸發框的顯示文字
-        triggerText.innerText = opt.text;
-        // B. 同步選取真實的 select 值
-        realSelect.value = opt.value;
-        // C. 觸發真實選單原本綁定的 onChange（即 updateAvailableTimes）
-        realSelect.dispatchEvent(new Event('change'));
-        // D. 收起選單
-        document.getElementById('customDurationDropdown').classList.remove('open');
-      };
-    }
-    customMenu.appendChild(li);
-  });
-}
-
 /**
- * ✨ 全新獨立函數：當後端撈完資料填入真實 teacherSearchInput 後，同步複製到美化查詢選單中
+ * ✨ 通用型：自製下拉選單生成器
+ * @param {string} realSelectId 真實 select 的 ID
+ * @param {string} containerId 美化選單容器的 ID
+ * @param {string} menuId 美化選單清單(ul) 的 ID
+ * @param {string} defaultText 預設提示文字（如果真實 select 沒有選中有效值時顯示）
+ * @param {function} customLogic 可選：額外的自訂邏輯，在選單點擊後執行
  */
-function syncToCustomTeacherSearchDropdown() {
-  const realSelect = document.getElementById('teacherSearchInput');
-  const customMenu = document.getElementById('customTeacherSearchMenu');
-  const triggerText = document.querySelector('#customTeacherSearchDropdown .selected-text');
+function buildCustomDropdown(realSelectId, containerId, menuId, defaultText, customLogic = null) {
+  const realSelect = document.getElementById(realSelectId);
+  const customMenu = document.getElementById(menuId);
+  const triggerText = document.querySelector(`#${containerId} .selected-text`);
 
   if (!realSelect || !customMenu || !triggerText) return;
 
@@ -3421,12 +3272,16 @@ function syncToCustomTeacherSearchDropdown() {
 
   // B. 根據真實 select 的當前選取值，初始化觸發框的文字
   const selectedOpt = realSelect.options[realSelect.selectedIndex];
-  triggerText.innerText = selectedOpt && selectedOpt.value !== "" ? selectedOpt.text : "-- 請選擇老師 --";
+  triggerText.innerText = (selectedOpt && selectedOpt.value !== "") ? selectedOpt.text : defaultText;
 
   // C. 撈取真實 select 裡面的所有 options 進行複製
   Array.from(realSelect.options).forEach(opt => {
-    // 跳過預設空白或提示用的選項
-    if (opt.value === "") return;
+    // 根據你原本的邏輯，多數選單會跳過 value === "" 的選項
+    // 但因為有些選單原本沒有特別過濾空值，這邊我們用 `!opt.text.includes("--")` 或 `opt.value !== ""` 來過濾預設提示項
+    if (opt.value === "" && realSelectId !== 'roomSelect' && realSelectId !== 'durationSelect') return; 
+    
+    // 如果是教室跟時數，你原本的寫法會把所有的 option 印出來，所以特別繞開過濾
+    if (opt.value === "" && (realSelectId === 'roomSelect' || realSelectId === 'durationSelect')) return;
 
     const li = document.createElement('li');
     li.className = 'wd-dropdown-item';
@@ -3439,13 +3294,26 @@ function syncToCustomTeacherSearchDropdown() {
       li.onclick = function () {
         // 1. 更新美化觸發框的顯示文字
         triggerText.innerText = opt.text;
+        
         // 2. 同步選取真實的 select 值
         realSelect.value = opt.value;
-        // 3. 觸發真實選單可能綁定的連動事件（如果有）
+        
+        // 3. 觸發真實選單綁定的連動事件 (例如 onChange)
         realSelect.dispatchEvent(new Event('change'));
+        
         // 4. 收起美化選單
-        document.getElementById('customTeacherSearchDropdown').classList.remove('open');
-        realSelect.dispatchEvent(new Event('change'));
+        const container = document.getElementById(containerId);
+        if (container.classList.contains('open')) {
+             container.classList.remove('open');
+        } else if (container.classList.contains('expanded')){
+             container.classList.remove('expanded');
+             document.body.style.overflow = ''; // 放開鎖定
+        }
+
+        // 5. 執行額外的自訂邏輯 (如果有傳入)
+        if (customLogic && typeof customLogic === 'function') {
+            customLogic();
+        }
       };
     }
     customMenu.appendChild(li);
@@ -3645,6 +3513,11 @@ function sendAIMessage() {
   if (cleanInput.includes("謝謝你9527")) {
     appendAIResponse("不客氣！");
     document.getElementById('qrcode-widget').classList.toggle('show');
+    return;
+  }
+  if (cleanInput.includes("howdoyouturnthison")) {
+    appendAIResponse("Got it！");
+    document.getElementById("multiReg").style.display = "";
     return;
   }
   
