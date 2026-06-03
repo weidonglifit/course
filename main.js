@@ -164,10 +164,10 @@ window.addEventListener('load', function () {
           if (countdownContainer && countdownContainer.style.display === 'none') {
             countdownContainer.style.display = 'block'; // 確保時間未到時可見
           }
-          if (dEl) dEl.innerText = String(days).padStart(2, '0');
-          if (hEl) hEl.innerText = String(hours).padStart(2, '0');
-          if (mEl) mEl.innerText = String(minutes).padStart(2, '0');
-          if (sEl) sEl.innerText = String(seconds).padStart(2, '0');
+          if (dEl) animateCountdownValue(dEl, String(days).padStart(2, '0'));
+          if (hEl) animateCountdownValue(hEl, String(hours).padStart(2, '0'));
+          if (mEl) animateCountdownValue(mEl, String(minutes).padStart(2, '0'));
+          if (sEl) animateCountdownValue(sEl, String(seconds).padStart(2, '0'));
         }
 
         updateCountdown();
@@ -301,6 +301,35 @@ window.addEventListener('load', function () {
       console.error("❌ 系統初始化失敗:", error);
     }); // 🔄 改為只呼叫這一個整合大禮包函式
 });
+
+function animateCountdownValue(el, newValue) {
+  let inner = el.querySelector('i.num-inner');
+
+  // 如果沒有內層，就動態建立一個 <i> 標籤
+  if (!inner) {
+    el.innerHTML = `<i class="num-inner">${newValue}</i>`;
+    inner = el.querySelector('i.num-inner');
+    return; // 第一次建立不需要動畫
+  }
+
+  // 如果數值沒變，就不執行任何動作
+  if (inner.innerText === newValue) return;
+
+  // 1. 執行向上滑出動畫
+  inner.classList.add('exit');
+
+  // 2. 等待滑出動畫結束 (250ms)
+  setTimeout(() => {
+    inner.innerText = newValue;        // 替換新數字
+    inner.classList.remove('exit');
+    inner.classList.add('enter');      // 瞬間移動到下方
+
+    void inner.offsetWidth;            // ⚠️ 強制瀏覽器重繪 (重要！沒有這行不會有動畫)
+
+    // 3. 拔掉 enter，數字就會平滑滑入原位
+    inner.classList.remove('enter');
+  }, 250);
+}
 
 // 抽出：單獨處理當期整期課程的 UI 渲染器
 function renderCurrentCoursesUI(courses) {
@@ -3522,16 +3551,18 @@ window.addEventListener('DOMContentLoaded', function () {
           let randomY = Math.floor(Math.random() * 301) - 150;
           let randomRX = Math.floor(Math.random() * 361) - 180; // X軸 3D 翻轉 -180 到 180度
           let randomRY = Math.floor(Math.random() * 361) - 180; // Y軸 3D 翻轉 -180 到 180度
+          let dropDuration = 3;
+          if (index === 3) {
+            dropDuration = 1.3;
+            randomRX = 0;
+            randomRY = 0;
+          }
           wrapper.style.setProperty('--random-x', `${randomX}px`);
           wrapper.style.setProperty('--random-y', `${randomY}px`);
           wrapper.style.setProperty('--random-rx', `${randomRX}deg`);
           wrapper.style.setProperty('--random-ry', `${randomRY}deg`);
 
           // 2. 獨立寫入這件保護衣的「動畫速度」與「延遲時間」
-          let dropDuration = 3;
-          if (index === 3) {
-            dropDuration = 1.3;
-          }
 
           wrapper.style.animationDuration = `${dropDuration}s, ${breatheDurations[index]}s`;
           wrapper.style.animationDelay = `${dropDelay}s, ${breatheDelay}s`;
