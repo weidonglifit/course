@@ -1608,7 +1608,7 @@ function fetchRoomStatus() {
   const head = document.getElementById('roomTableHead');
 
   if (!room || !dateString) return;
-  body.innerHTML = '<tr><td colspan="4">讀取時段中...</td></tr>';
+  body.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 20px;">讀取時段中...</td></tr>';
 
   const weekDays = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
   const d = new Date(dateString);
@@ -1645,7 +1645,6 @@ function fetchRoomStatus() {
     }
   });
 
-
   allCourseDataPast.forEach(course => {
     if (course.room === room && course.name.includes(selectedDayName) && course.dates.includes(formattedDate)) {
       const timeMatch = course.name.match(/\d{2}:\d{2}-\d{2}:\d{2}/);
@@ -1659,9 +1658,6 @@ function fetchRoomStatus() {
     }
   });
 
-
-
-
   callGasApi("getRoomStatus", [room, dateString])
     .then(function (serverStatus) {
       currentStatusData = localStatusGrid.map((item, idx) => {
@@ -1669,41 +1665,30 @@ function fetchRoomStatus() {
         return serverStatus[idx];
       });
 
-      // 修改表頭：顯示為兩組「時間/狀態」
-      head.innerHTML = `
-      <th>時間</th><th>${selectedDayName} 預約狀態</th>
-      <th>時間</th><th>${selectedDayName} 預約狀態</th>`;
+      // 由於改用網格排版，不需要傳統的表頭了，將其清空讓畫面更乾淨
+      head.innerHTML = ""; 
 
-      let html = "";
-      const totalSlots = currentStatusData.length;
-      const half = Math.ceil(totalSlots / 2); // 將資料分成兩半
-
-      for (let i = 0; i < half; i++) {
-        html += "<tr>";
-
-        // --- 左半部 (第 i 個) ---
-        html += renderSlotCell(currentStatusData[i], i);
-
-        // --- 右半部 (第 i + half 個) ---
-        if (i + half < totalSlots) {
-          html += renderSlotCell(currentStatusData[i + half], i + half);
-        } else {
-          html += "<td></td><td></td>"; // 補空白格
-        }
-
-        html += "</tr>";
-      }
+      // 建立 4 欄式網格容器
+      let gridHtml = '<div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; padding: 10px 5px;">';
+      
+      currentStatusData.forEach((item, i) => {
+        gridHtml += renderSlotTile(item, i);
+      });
+      
+      gridHtml += '</div>';
 
       const msgDiv = document.getElementById('roomstatusmsg');
       if (msgDiv) {
-        msgDiv.innerHTML = "<span style='color: red;'>注意：預約以1小時為單位</span>";
+        msgDiv.innerHTML = "<span style='color: red;'>注意：預約以 1 小時為單位</span>";
       }
-      body.innerHTML = html;
+      
+      // 將網格直接放入 tbody 中，無縫接軌原本的 HTML 結構
+      body.innerHTML = `<tr><td colspan="4" style="padding: 0; border: none;">${gridHtml}</td></tr>`;
+      
       document.getElementById('statusTableSection').style.display = 'block';
       updateAvailableTimes();
     })
     .catch(function (err) {
-      // 增加例外處理，避免查詢失敗時畫面卡死或沒有提示
       console.error("❌ 讀取教室狀態失敗:", err);
       const msgDiv = document.getElementById('roomstatusmsg');
       if (msgDiv) {
@@ -1714,45 +1699,66 @@ function fetchRoomStatus() {
     });
 }
 
-function renderSlotCell(item, index) {
+// 將原本的 renderSlotCell 改名並改為卡片式輸出
+function renderSlotTile(item, index) {
   let displayStatus = item.status;
-  let fontColor = displayStatus === "可預約" ? "green" : "red";
-  let statusContent = displayStatus;
+  const startTime = item.time.split("-")[0]; // 只取前半段時間顯示，如 "09:00"
 
+  // 判斷前後時段，如果只剩下單一 30 分鐘則不可預約
   if (displayStatus === "可預約") {
     const prev = currentStatusData[index - 1];
     const next = currentStatusData[index + 1];
     if ((!prev || prev.status !== "可預約") && (!next || next.status !== "可預約")) {
-      statusContent = "不可預約";
-      fontColor = "#999";
-    } else {
-      const startTime = item.time.split("-")[0];
-      statusContent = `<button type="button" class="time-slot-btn" 
-                data-index="${index}" data-time="${startTime}"
-                onclick="selectStartTime('${startTime}', this)"
-                style="width: 90%; padding: 2px 0; background: #E87A90; color: white; border: none; border-radius: 11px; cursor: pointer; font-size: 16px; display: block; margin: auto; max-height: 26px; font-weight:normal;">
-                ${startTime}
-              </button>`;
+      displayStatus = "不可預約"; 
     }
   }
 
-  return `
-    <td style="font-weight:bold; background:#fafafa;">${item.time}</td>
-    <td style="color:${fontColor}; font-weight:bold;">${statusContent}</td>`;
+  // 🌟 外層按鈕樣式：移除 flex，並加入 -webkit-appearance: none 消除手機預設隱藏樣式
+  const commonBtnStyle = "height: 60px; width: 100%; border-radius: 8px; box-sizing: border-box; padding: 0; margin: 0; transition: all 0.5s; -webkit-appearance: none; overflow: hidden;";
+  
+  // 🌟 內層排版容器：利用一個佔滿 100% 高度的 div 來負責完美的垂直置中 (完美避開 iOS 按鈕 Bug)
+  const innerWrapper = `<div style="height: 100%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; pointer-events: none;">`;
+
+  if (displayStatus === "可預約") {
+    // 🟢 空檔：粉紅色空心按鈕
+    return `
+      <button type="button" class="time-slot-btn" 
+        data-index="${index}" data-time="${startTime}"
+        onclick="selectStartTime('${startTime}', this)"
+        style="${commonBtnStyle} background: #fff; border: 1.5px solid #F4A7B9; color: #E87A90; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+        ${innerWrapper}
+          <div style="font-size: 1.2em; font-weight: bold; line-height: 1.1;">${startTime}</div>
+          <div style="font-size: 1em; margin-top: 3px; font-weight: bold; line-height: 1.1;">預約</div>
+        </div>
+      </button>
+    `;
+  } else {
+    // ⚪️ 滿檔/課程/單獨時段：灰色無法點擊方塊
+    return `
+      <button type="button" disabled
+        style="${commonBtnStyle} background: #f5f5f5; border: 1.5px solid #eee; color: #aaa; cursor: not-allowed;">
+        ${innerWrapper}
+          <div style="font-size: 1.2em; text-decoration: line-through; line-height: 1.1;">${startTime}</div>
+          <div style="font-size: 1em; margin-top: 3px; color: #888; line-height: 1.1;">${displayStatus}</div>
+        </div>
+      </button>
+    `;
+  }
 }
 
-// 點擊表格按鈕時，將時間填入文字框，並改變按鈕顏色
+// 點擊磁磚按鈕時，將時間填入文字框，並改變按鈕顏色
 function selectStartTime(time, btnEl) {
   document.getElementById('startTimeSelect').value = time;
 
-  // 恢復所有按鈕顏色
+  // 1. 恢復所有按鈕為「白底粉字」的未選取狀態
   document.querySelectorAll('.time-slot-btn').forEach(b => {
-    b.style.background = "#E87A90";
-    b.style.fontWeight = "normal";
+    b.style.background = "#fff";
+    b.style.color = "#E87A90";
   });
-  // 讓選中的按鈕變色
-  btnEl.style.background = "#D05A6E";
-  btnEl.style.fontWeight = "bold";
+  
+  // 2. 讓當前選中的按鈕變成「實心粉色」的選取狀態
+  btnEl.style.background = "#E87A90";
+  btnEl.style.color = "white";
 }
 
 function updateAvailableTimes() {
@@ -1776,8 +1782,35 @@ function updateAvailableTimes() {
       }
     }
 
-    // 根據檢查結果切換按鈕顯示狀態
-    btn.style.display = canBook ? "inline-block" : "none";
+    // --- 🌟 動畫切換邏輯 ---
+    if (canBook) {
+      // 【進場動畫】：若原本是隱藏的，必須先取消 none 才能開始播動畫
+      if (btn.style.display === "none") {
+        btn.style.display = ""; // 恢復原本的網格顯示模式
+        
+        // 觸發重繪 (Reflow) 的小魔法：這行看起來沒做事，但它能強制瀏覽器刷新，確保接下來的動畫會完美觸發
+        btn.offsetHeight; 
+      }
+      
+      // 狀態設定為：完全不透明 + 正常大小
+      btn.style.opacity = "1";
+      btn.style.transform = "scale(1)";
+      btn.style.pointerEvents = "auto";
+
+    } else {
+      // 【退場動畫】：先播放淡出與縮小，不馬上隱藏
+      btn.style.opacity = "0";
+      btn.style.transform = "scale(0.8)";
+      btn.style.pointerEvents = "none";
+      
+      // 等待 200 毫秒（與我們剛剛寫的按鈕 transition 0.2s 一致）後，才真正把元素抽掉
+      setTimeout(() => {
+        // 雙重檢查：避免在動畫期間，使用者又快速切換時數導致錯亂
+        if (btn.style.opacity === "0") {
+          btn.style.display = "none";
+        }
+      }, 500);
+    }
   });
 }
 
@@ -2083,9 +2116,8 @@ function handleRoomQuery() {
     return;
   }
 
-  // 1. 查詢開始：按鈕禁用，顯示查詢中狀態
-  btn.innerHTML = '<svg class="walking-circle" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><path fill="white" d="M480 272C480 317.9 465.1 360.3 440 394.7L566.6 521.4C579.1 533.9 579.1 554.2 566.6 566.7C554.1 579.2 533.8 579.2 521.3 566.7L394.7 440C360.3 465.1 317.9 480 272 480C157.1 480 64 386.9 64 272C64 157.1 157.1 64 272 64C386.9 64 480 157.1 480 272zM272 416C351.5 416 416 351.5 416 272C416 192.5 351.5 128 272 128C192.5 128 128 192.5 128 272C128 351.5 192.5 416 272 416z"/></svg>';
-  //<!--!Font Awesome Free v7.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.-->
+  // 1. 查詢開始
+  btn.innerHTML = '<svg class="walking-circle" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" width="16" height="16"><path fill="white" d="M480 272C480 317.9 465.1 360.3 440 394.7L566.6 521.4C579.1 533.9 579.1 554.2 566.6 566.7C554.1 579.2 533.8 579.2 521.3 566.7L394.7 440C360.3 465.1 317.9 480 272 480C157.1 480 64 386.9 64 272C64 157.1 157.1 64 272 64C386.9 64 480 157.1 480 272zM272 416C351.5 416 416 351.5 416 272C416 192.5 351.5 128 272 128C192.5 128 128 192.5 128 272C128 351.5 192.5 416 272 416z"/></svg>';
   btn.disabled = true;
   btn.style.backgroundColor = "#E87A90";
   btn.style.cursor = "not-allowed";
@@ -2094,7 +2126,7 @@ function handleRoomQuery() {
 
   callGasApi("queryRoomReservation", [phone])
     .then(function (res) {
-      // 2. 查詢完畢：恢復按鈕狀態 
+      // 2. 查詢完畢
       btn.innerText = "查詢";
       btn.disabled = false;
       btn.style.backgroundColor = "#E87A90";
@@ -2105,46 +2137,48 @@ function handleRoomQuery() {
         resultDiv.innerText = res;
         resultDiv.style.color = "red";
       } else {
-        // --- 核心修改：建構具備 10px 圓角容器的表格 ---
         const rows = res.split("\n");
+        
+        // 防禦設定：清除 padding 與確保白淨的格式
+        resultDiv.style.padding = "0"; 
+        resultDiv.style.whiteSpace = "normal"; 
 
-        // 1. 確保外層 resultDiv 沒有預設 padding
-        resultDiv.style.padding = "0";
+        // 縮小卡片間距，讓清單更緊湊
+        let cardHtml = '<div style="display:flex;flex-direction:column;gap:10px;margin-top:12px;">';
 
-        // 2. 使用完全緊湊的字串，中間不留任何換行，並加入 display: block
-        let tableHtml = '<div style="border-radius:10px; overflow:hidden; border:1px solid #ddd; margin-top:10px; display:flex; flex-direction:column; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">';
-        tableHtml += '<table style="width:100%; border-collapse:collapse; background-color:white; font-size:16px; border:none; margin:0; padding:0; display:table;">';
-        tableHtml += '<thead style="margin:0; padding:0;">';
-        tableHtml += '<tr style="background-color:#F4A7B9; margin:0;">';
-        tableHtml += '<th style="border-right:1px solid rgba(0,0,0,0.05); padding:12px 5px; text-align:center; color:#2c3e50; line-height:1; vertical-align:middle;">教室</th>';
-        tableHtml += '<th style="border-right:1px solid rgba(0,0,0,0.05); padding:12px 5px; text-align:center; color:#2c3e50; line-height:1; vertical-align:middle;">日期</th>';
-        tableHtml += '<th style="padding:12px 5px; text-align:center; color:#2c3e50; line-height:1; vertical-align:middle;">時間</th>';
-        tableHtml += '</tr></thead><tbody>';
-
-        rows.forEach((rowStr, index) => {
+        rows.forEach((rowStr) => {
           const parts = rowStr.split('｜');
           if (parts.length === 3) {
             const room = parts[0].replace('教室: ', '').trim();
             const date = parts[1].replace('日期: ', '').trim();
             const time = parts[2].replace('時間: ', '').trim();
-            const rowStyle = (index === rows.length - 1) ? '' : 'border-bottom: 1px solid #eee;';
 
-            tableHtml += `<tr style="${rowStyle}"><td style="border-right:1px solid #eee; padding:10px 5px; text-align:center;">${room}</td><td style="border-right:1px solid #eee; padding:10px 5px; text-align:center;">${date}</td><td style="padding:10px 5px; text-align:center;">${time}</td></tr>`;
+            // 🌟 核心修改：
+            // 1. 外層改為「白底 + 1.5px 粉紅框」，完全比照教室樣式
+            // 2. 日期與時間「放在同一行」，字體放大為 1.05em
+            // 3. 右側教室標籤改為「粉底白字」，讓畫面有視覺重點但不突兀
+            cardHtml += `<div style="display:flex;justify-content:space-between;align-items:center;border:1.5px solid #F4A7B9;border-radius:20px;padding:12px 15px;background:#fff;box-shadow:0 2px 6px rgba(244,167,185,0.15);">
+            <div style="display:flex;align-items:center;font-weight:bold;color:#666;">
+            <div style="width:110px;font-size:1.1em;text-align:right;">${date}</div>
+            <div style="width:105px;text-align:center;margin-left:10px;color:#333;font-size:0.95em;border:1px solid #F4A7B9;border-radius:8px;padding:3px 0;">${time}</div>
+            </div><div>
+            <span style="background:#F4A7B9;color:#fff;padding:5px 12px;border-radius:15px;font-size:0.95em;font-weight:bold;white-space:nowrap;">${room}</span>
+            </div></div>`;
           }
         });
 
-        tableHtml += `</tbody></table></div>`;
+        cardHtml += `</div>`;
 
         resultDiv.style.color = "#2c3e50";
-        resultDiv.innerHTML = "\n" + tableHtml;
+        resultDiv.innerHTML = cardHtml;
       }
     })
     .catch(function (err) {
-      btn.innerText = "查詢我的預約";
+      btn.innerText = "查詢";
       btn.disabled = false;
       btn.style.backgroundColor = "#E87A90";
+      btn.style.cursor = "pointer";
 
-      // 可以將錯誤訊息印在 Console 方便除錯
       console.error("查詢預約失敗:", err.message || err);
       resultDiv.innerText = "❌ 系統錯誤，請稍後再試。";
       resultDiv.style.color = "red";
