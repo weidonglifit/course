@@ -33,6 +33,26 @@ const COMMON_INFO_BTNS = `
 let aiStime = 0;
 let aiEtime = 0;
 let textTimer;
+// 註冊一個自訂的 HTML 標籤元件
+class CustomNoticePulse extends HTMLElement {
+  connectedCallback() {
+    this.innerHTML = `
+      <div class="notice-pulse-container">
+        <div class="notice-pulse-text" style="display: inline-flex; align-items: center; gap: 6px;">
+          <svg class="flicker-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" style="width: 25px; height: 25px; fill: #e74c3c;">
+            <path d="M320 64C334.7 64 348.2 72.1 355.2 85L571.2 485C577.9 497.4 577.6 512.4 570.4 524.5C563.2 536.6 550.1 544 536 544L104 544C89.9 544 76.8 536.6 69.6 524.5C62.4 512.4 62.1 497.4 68.8 485L284.8 85C291.8 72.1 305.3 64 320 64zM320 416C302.3 416 288 430.3 288 448C288 465.7 302.3 480 320 480C337.7 480 352 465.7 352 448C352 430.3 337.7 416 320 416zM320 224C301.8 224 287.3 239.5 288.6 257.7L296 361.7C296.9 374.2 307.4 384 319.9 384C332.5 384 342.9 374.3 343.8 361.7L351.2 257.7C352.5 239.5 338.1 224 319.8 224z" />
+          </svg>
+          請一次報名一人
+          <svg class="flicker-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" style="width: 25px; height: 25px; fill: #e74c3c;">
+            <path d="M320 64C334.7 64 348.2 72.1 355.2 85L571.2 485C577.9 497.4 577.6 512.4 570.4 524.5C563.2 536.6 550.1 544 536 544L104 544C89.9 544 76.8 536.6 69.6 524.5C62.4 512.4 62.1 497.4 68.8 485L284.8 85C291.8 72.1 305.3 64 320 64zM320 416C302.3 416 288 430.3 288 448C288 465.7 302.3 480 320 480C337.7 480 352 465.7 352 448C352 430.3 337.7 416 320 416zM320 224C301.8 224 287.3 239.5 288.6 257.7L296 361.7C296.9 374.2 307.4 384 319.9 384C332.5 384 342.9 374.3 343.8 361.7L351.2 257.7C352.5 239.5 338.1 224 319.8 224z" />
+          </svg>
+        </div>
+      </div>
+    `;
+  }
+}
+// 定義新標籤名稱 (名稱中間必須帶有至少一個橫線 - )
+customElements.define('custom-notice-pulse', CustomNoticePulse);
 // 0. 網頁載入時，自動抓取後端試算表的課程清單填入下拉選單
 window.addEventListener('load', function () {
   const startTime = performance.now();
@@ -99,7 +119,7 @@ window.addEventListener('load', function () {
               messageText = match[2].trim(); // 取得中括號後面的字 (例如: 蝶谷巴特手做課程)
             }
 
-            const badgeHtml = `<span style="background: linear-gradient(135deg, #FFD1DC 0%, #E87A90 100%); color: white; padding: 2px 7px; border-radius: 50px; font-size: 0.55em; font-weight: bold; margin-right: 5px; display: inline-block; vertical-align: middle; box-shadow: 0 2px 5px rgba(232, 122, 144, 0.2);">${tagText}</span>`;
+            const badgeHtml = `<span style="background: linear-gradient(135deg, #FFD1DC 0%, #E87A90 100%); color: white; padding: 2px 7px; border-radius: 50px; font-size: 0.55em; font-weight: bold; margin-right: 5px; display: inline-block; vertical-align: middle; box-shadow: 0 2px 5px rgba(232, 122, 144, 0.2);"><span class="badge-text-heartbeat">${tagText}</span></span>`;
 
             return badgeHtml + `<span style="vertical-align: middle;">${messageText}</span>`;
           }
@@ -233,14 +253,22 @@ window.addEventListener('load', function () {
       if (scheduleBodyPast) {
         renderAccordionSchedule(allCourseDataPast, scheduleBodyPast, "SINGLE");
       }
+      // 動態牆
       const wallSection = document.getElementById('popularBookingWall');
       const wallContainer = document.getElementById('popularWallContainer');
       if (wallSection && wallContainer) {
         if (initData.popularWallData && initData.popularWallData.length > 0) {
           wallSection.style.display = 'block';
-          let wallHtml = '';
+          
+          let wallItemsData = initData.popularWallData;
+          
+          // 若資料過少 (小於 5 筆)，我們將陣列複製疊加，確保有足夠的節點能完美執行「進場/退場」的狀態切換
+          if(wallItemsData.length > 0 && wallItemsData.length < 5) {
+            wallItemsData = [...wallItemsData, ...wallItemsData, ...wallItemsData];
+          }
 
-          initData.popularWallData.forEach(item => {
+          let wallHtml = '';
+          wallItemsData.forEach(item => {
             wallHtml += `
             <div class="booking-wall-item" style="border-left: 5px solid ${item.color};">
               <div class="wall-date">${item.displayDate}</div>
@@ -248,13 +276,60 @@ window.addEventListener('load', function () {
                 ${item.status}
               </div>
             </div>
-          `;
+            `;
           });
           wallContainer.innerHTML = wallHtml;
+          
+          // 清除可能殘留的舊計時器
+          if (window.popularWallInterval) clearInterval(window.popularWallInterval);
+          window.currentWallIndex = 0; // 重置起點
+          
+          // 更新卡片狀態的函數
+          function updateWallPositions() {
+            const items = document.querySelectorAll('#popularWallContainer .booking-wall-item');
+            const total = items.length;
+            if (total === 0) return;
+
+            // 先清除所有狀態 Class
+            items.forEach(item => {
+              item.classList.remove('wall-pos-0', 'wall-pos-1', 'wall-pos-2', 'wall-pos-exit', 'wall-pos-enter');
+            });
+
+            // 計算當前輪播的各個目標索引
+            const idx0 = window.currentWallIndex % total;
+            const idx1 = (window.currentWallIndex + 1) % total;
+            const idx2 = (window.currentWallIndex + 2) % total;
+            const idxExit = (window.currentWallIndex - 1 + total) % total;  // 剛退場的卡片
+            const idxEnter = (window.currentWallIndex + 3) % total;         // 準備進場的卡片
+
+            // 賦予新的狀態 Class
+            items[idx0].classList.add('wall-pos-0');
+            items[idx1].classList.add('wall-pos-1');
+            items[idx2].classList.add('wall-pos-2');
+            items[idxExit].classList.add('wall-pos-exit');
+            items[idxEnter].classList.add('wall-pos-enter');
+          }
+
+          // 初始化第一次排版
+          updateWallPositions();
+          
+          // 設定每 3 秒往上滾動輪播一次 (可自行調整毫秒數)
+          window.popularWallInterval = setInterval(() => {
+            const items = document.querySelectorAll('#popularWallContainer .booking-wall-item');
+            if (items.length === 0) return;
+            
+            // 指標 +1，並觸發重新計算
+            window.currentWallIndex = (window.currentWallIndex + 1) % items.length;
+            updateWallPositions();
+          }, 5000);
+
         } else {
           wallSection.style.display = 'none';
         }
       }
+
+      
+
       // 9. 💡 初始化「單堂下拉選單」與「查詢老師下拉選單」
       initSingleCourseDropdown();
       renderTeacherDropdownUI(initData.teachers);
