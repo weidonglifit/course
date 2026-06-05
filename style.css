@@ -3159,12 +3159,12 @@ select {
   from { 
     opacity: 0; 
     transform: perspective(500px) scale(2) translateX(var(--random-x, 0px)) translateY(var(--random-y, 0px)) rotate(var(--random-rot, 0deg)) rotateX(var(--random-rx, 0deg)) rotateY(var(--random-ry, 0deg)); 
-    filter: blur(20px) drop-shadow(0px 10px 20px rgba(226, 125, 152, 0.6));
+    filter: drop-shadow(0px 10px 20px rgba(226, 125, 152, 0.6));
   }
   to { 
     opacity: 1; 
     transform: perspective(500px) scale(1) translateX(0px) translateY(0px) rotate(0deg) rotateX(0deg) rotateY(0deg); 
-    filter: blur(0px) drop-shadow(0px 0px 0px rgba(255, 255, 255, 0));
+    filter: drop-shadow(0px 0px 0px rgba(255, 255, 255, 0));
   }
 }
 
@@ -3315,9 +3315,68 @@ select {
   color: #E87A90;
   /* 關鍵：利用 CSS Order 讓它強制排在所有小卡的「最左邊」 */
   order: -1; 
+  display: inline-flex; 
+  align-items: center; 
+  gap: 6px;
 }
 .teacher-small-card.reselect-card-style:hover {
   background: #E87A90;
   color: #ffffff;
   border-style: solid;
+}
+
+/* 最新活動：主圖片 */
+.news-carousel-layer {
+  position: absolute; /* 絕對定位，讓兩張圖疊在一起 */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  cursor: pointer;
+  
+  /* 🌟 核心魔法：透明度 0.5 秒滑順漸變 */
+  transition: opacity 1s ease-in-out; 
+  opacity: 0; /* 預設為全透明 */
+  z-index: 1;
+}
+
+/* 當加上 .show 時，圖片就會浮現並移到上層 */
+.news-carousel-layer.show {
+  opacity: 1;
+  z-index: 2;
+}
+
+/* 最新活動：縮圖容器 */
+.news-thumbnails-container {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+  overflow-x: auto; /* 若縮圖太多，允許橫向滑動 */
+  padding-bottom: 8px; /* 留一點空間給捲軸跟陰影 */
+  padding: 5px 4px 5px 4px;
+  scrollbar-width: none; 
+}
+.news-thumbnails-container::-webkit-scrollbar {
+  display: none; 
+}
+
+/* 最新活動：單一縮圖 */
+.news-thumbnail {
+  width: 65px;
+  height: 65px;
+  border-radius: 8px;
+  object-fit: cover;
+  cursor: pointer;
+  border: 2px solid transparent;
+  opacity: 0.5;
+  transition: all 0.3s ease;
+  flex-shrink: 0; /* 防止縮圖被擠壓變形 */
+}
+
+/* 縮圖被選中時的狀態 */
+.news-thumbnail.active {
+  border-color: #E87A90; /* 你的主品牌色 */
+  opacity: 1;
+  transform: scale(1.05); /* 微微放大 */
 }

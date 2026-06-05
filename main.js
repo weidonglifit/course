@@ -366,6 +366,7 @@ window.addEventListener('load', function () {
           picBody.innerHTML = '<p style="color: #999; text-align: center; width: 100%;">目前沒有活動照片</p>';
         }
       }
+      renderNewsCarousel(initData.newsphotos);
 
       const endTime = performance.now();
       // 3. 計算差值並換算成秒數 (保留三位小數)
@@ -3214,7 +3215,7 @@ function selectCourseCard(courseValue, selectedCard) {
     });
 
     const reselectBtn = document.getElementById('reselectCourseBtn');
-    reselectBtn.style.display = 'block';
+    reselectBtn.style.display = 'inline-flex';
 
     const endRect = selectedCard.getBoundingClientRect();
 
@@ -3399,7 +3400,7 @@ function selectTeacherCard(teacherValue, selectedCard) {
     });
 
     const reselectBtn = document.getElementById('reselectTeacherBtn');
-    reselectBtn.style.display = 'block';
+    reselectBtn.style.display = 'inline-flex';
 
     const endRect = selectedCard.getBoundingClientRect();
 
@@ -4539,4 +4540,131 @@ function getOrCreateExpandOverlay() {
     document.body.appendChild(overlay);
   }
   return overlay;
+}
+
+// 建立全域變數
+let globalNewsPhotos = [];
+let currentNewsIndex = 0;     // 記錄目前播到第幾張
+let newsCarouselTimer = null; // 記錄自動輪播的計時器
+
+/**
+ * 渲染最新活動的輪播圖區塊
+ */
+function renderNewsCarousel(photos) {
+  const picBody = document.getElementById('news-body');
+  if (!picBody) return;
+
+  // 如果沒有資料，顯示預設提示
+  if (!photos || photos.length === 0) {
+    picBody.innerHTML = '<p style="color:#888; text-align:center; padding: 20px;">目前尚無最新活動，敬請期待！</p>';
+    return;
+  }
+
+  globalNewsPhotos = photos;
+  currentNewsIndex = 0; // 重置為第一張
+
+  // 1. 生成上方的大圖
+  const mainImgHtml = `
+    <div class="news-carousel-wrapper" style="position: relative; width: 100%; max-width: 400px; aspect-ratio: 2/3; overflow: hidden; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+      <img id="newsImgA" class="news-carousel-layer show" 
+           src="${photos[0]}" 
+           onclick="openLightbox(this.src)">
+      <img id="newsImgB" class="news-carousel-layer" 
+           src="" 
+           onclick="openLightbox(this.src)">
+    </div>
+  `;
+
+  // 2. 生成下方的縮圖列
+  let thumbHtml = '<div class="news-thumbnails-container">';
+  photos.forEach((url, index) => {
+    const isActive = index === 0 ? 'active' : '';
+    // 🌟 注意：這裡的 onclick 多傳了一個 true，代表是「使用者手動點擊」
+    thumbHtml += `
+      <img class="news-thumbnail ${isActive}" 
+           src="${url}" 
+           id="newsThumb_${index}"
+           onclick="changeNewsMainImage(${index}, true)">
+    `;
+  });
+  thumbHtml += '</div>';
+
+  picBody.innerHTML = mainImgHtml + thumbHtml;
+
+  // 🚀 啟動自動輪播！
+  startNewsAutoPlay();
+}
+
+/**
+ * 切換上方大圖 (交叉淡入淡出 Cross-fade)
+ */
+let isLayerA_Active = true;
+function changeNewsMainImage(index, isManual = false) {
+  // 抓出兩層圖片容器
+  const imgA = document.getElementById('newsImgA');
+  const imgB = document.getElementById('newsImgB');
+  if (!imgA || !imgB) return;
+
+  // 更新目前播放的索引
+  currentNewsIndex = index;
+  const targetUrl = globalNewsPhotos[currentNewsIndex];
+
+  // 🌟 判斷現在是哪一層亮著，就把新圖片載入到「另一層(暗著的那層)」
+  if (isLayerA_Active) {
+    // A 亮著，準備把圖塞給 B
+    imgB.src = targetUrl;
+    imgB.onload = () => {
+      // 確定 B 的圖下載好了，同時切換透明度！
+      imgB.classList.add('show');
+      imgA.classList.remove('show');
+      isLayerA_Active = false; // 狀態切換為 B 亮著
+    };
+  } else {
+    // B 亮著，準備把圖塞給 A
+    imgA.src = targetUrl;
+    imgA.onload = () => {
+      // 確定 A 的圖下載好了，同時切換透明度！
+      imgA.classList.add('show');
+      imgB.classList.remove('show');
+      isLayerA_Active = true; // 狀態切換為 A 亮著
+    };
+  }
+
+  // 👇 下方縮圖狀態切換 (這段維持不變)
+  const allThumbs = document.querySelectorAll('.news-thumbnail');
+  allThumbs.forEach((thumb, i) => {
+    if (i === currentNewsIndex) {
+      thumb.classList.add('active');
+      thumb.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+    } else {
+      thumb.classList.remove('active');
+    }
+  });
+
+  // UX 防呆：如果是手動點擊，重置計時器
+  if (isManual) {
+    startNewsAutoPlay();
+  }
+}
+
+/**
+ * 啟動或重置自動輪播計時器
+ */
+function startNewsAutoPlay() {
+  // 先清除舊的計時器，避免越跑越快 (防呆)
+  if (newsCarouselTimer) {
+    clearInterval(newsCarouselTimer);
+  }
+  
+  // 設定每 3000 毫秒 (3秒) 自動切換下一張
+  newsCarouselTimer = setInterval(() => {
+    let nextIndex = currentNewsIndex + 1;
+    
+    // 如果播到最後一張了，就從 0 (第一張) 重新開始
+    if (nextIndex >= globalNewsPhotos.length) {
+      nextIndex = 0;
+    }
+
+    changeNewsMainImage(nextIndex, false);
+  }, 5000);
 }
