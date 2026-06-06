@@ -2620,6 +2620,38 @@ function injectCommonRules() {
   containers.forEach(container => {
     container.innerHTML = COMMON_INFO_BTNS;
   });
+  formatButtonText();
+  startRandomJitter();
+  startPeekabooEgg();
+}
+
+// 控制隨機微動的專屬函式
+function startRandomJitter() {
+  const buttons = Array.from(document.querySelectorAll('.info-card-btn'));
+  if (buttons.length === 0) return;
+
+  // 設定每 2000 毫秒 (2秒) 執行一次循環
+  // (扣掉動畫本身的 0.6 秒，等於每次抖完會安靜休息 1.4 秒)
+  setInterval(() => {
+    
+    // 1. 先把所有按鈕的抖動 class 清除，讓它們歸零
+    buttons.forEach(btn => btn.classList.remove('jitter'));
+
+    // 2. 利用 setTimeout 製造一點極短的延遲，強迫瀏覽器重新載入動畫
+    setTimeout(() => {
+      // 隨機決定這次要抖幾個？ (1 或 2 個)
+      const jitterCount = Math.floor(Math.random() * 2) + 1; 
+
+      // 把按鈕陣列「洗牌打亂」，然後取出前 1~2 個
+      const shuffled = buttons.sort(() => 0.5 - Math.random());
+      const selectedButtons = shuffled.slice(0, jitterCount);
+
+      // 幫這幾個幸運兒加上抖動 class
+      selectedButtons.forEach(btn => btn.classList.add('jitter'));
+      
+    }, 50); // 50 毫秒的緩衝
+
+  }, 1400); 
 }
 
 // 確保在頁面載入後執行
@@ -2638,7 +2670,7 @@ window.addEventListener('load', () => {
     }
   }
   injectCommonRules();
-
+  
   // 尋找所有的文字、電話、信箱輸入框
   const textInputs = document.querySelectorAll('input[type="text"], input[type="tel"], input[type="email"]');
 
@@ -4667,4 +4699,66 @@ function startNewsAutoPlay() {
 
     changeNewsMainImage(nextIndex, false);
   }, 5000);
+}
+
+function formatButtonText() {
+  document.querySelectorAll('.info-card-btn span').forEach(span => {
+    const text = span.textContent.trim();
+    if (text.length === 4) {
+      span.innerHTML = text.substring(0, 2) + '<br>' + text.substring(2);
+    }
+  });
+}
+
+function startPeekabooEgg() {
+  const buttons = Array.from(document.querySelectorAll('.info-card-btn'));
+  if (buttons.length === 0) return;
+
+  // 1. 創造一隻貓咪元素 (DOM)
+  const cat = document.createElement('div');
+  cat.className = 'peekaboo-cat';
+  
+  // 如果你想換成圖片，可以把 innerHTML 改成 <img src="黑豆的照片網址" style="width:24px;">
+  cat.innerHTML = `
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="#E87A90">
+      <path d="M461.814,197.514c-2.999-11.335-14.624-18.093-25.958-15.094c-1.866,0.553-13.477,3.649-26.042,14.341
+        c-6.234,5.349-12.633,12.751-17.361,22.454c-4.748,9.69-7.685,21.577-7.657,35.033c0.013,16.345,4.133,34.895,13.442,56.257
+        c6.282,14.403,9.144,29.697,9.144,44.846c0.062,25.627-8.438,50.756-21.121,68.283c-6.296,8.777-13.546,15.606-20.816,20.022
+        c-2.986,1.81-5.943,3.131-8.888,4.181l0.989-5.854c-0.055-17.03-4.05-34.84-13.021-50.528
+        c-28.356-49.643-66.223-134.741-66.223-134.741l-1.527-4.879c29.47-7.796,58.579-23.408,73.148-54.985
+        c38.931-84.344-41.08-142.73-41.08-142.73s-25.958-56.222-38.924-54.06c-12.978,2.164-41.094,38.931-41.094,38.931h-23.788h-23.788
+        c0,0-28.108-36.767-41.08-38.931c-12.979-2.163-38.924,54.06-38.924,54.06s-80.018,58.386-41.087,142.73
+        c13.822,29.953,40.741,45.572,68.634,53.748l-2.951,9.662c0,0-31.908,81.552-60.279,131.195C37.198,441.092,58.478,512,97.477,512
+        c29.47,0,79.14,0,101.692,0c7.292,0,11.763,0,11.763,0c22.544,0,72.222,0,101.691,0c12.654,0,23.38-7.547,31.204-19.324
+        c15.826-0.013,30.81-4.872,43.707-12.758c19.455-11.915,34.708-30.32,45.434-51.896c10.685-21.618,16.856-46.636,16.878-72.672
+        c0-20.484-3.885-41.619-12.682-61.813c-7.561-17.34-9.918-30.216-9.904-39.29c0.028-7.526,1.5-12.544,3.359-16.414
+        c1.417-2.889,3.124-5.17,4.983-7.091c2.771-2.868,5.964-4.879,8.349-6.054c1.182-0.595,2.135-0.968,2.674-1.162l0.449-0.152
+        l-0.007-0.028C458.179,220.189,464.779,208.724,461.814,197.514z"/>
+    </svg>
+  `;
+
+  // 先把貓咪隨便塞進第一個按鈕待命
+  buttons[0].appendChild(cat);
+
+  // 2. 設定排程：每隔 8 秒鐘出來巡視一次
+  setInterval(() => {
+    // 為了避免動畫錯亂，如果貓咪還在外面探頭，就先不要動牠
+    if (cat.classList.contains('active')) return;
+
+    // 隨機挑選一個要躲藏的按鈕
+    const randomIndex = Math.floor(Math.random() * buttons.length);
+    const targetBtn = buttons[randomIndex];
+
+    // 把貓咪瞬間移動到新選中的按鈕底下
+    targetBtn.appendChild(cat);
+
+    // 觸發探頭動畫！
+    cat.classList.add('active');
+
+    // 動畫設定是 3 秒，所以 3 秒後把 active 拔掉，讓牠恢復待命狀態
+    setTimeout(() => {
+      cat.classList.remove('active');
+    }, 3000);
+
+  }, 8000); // 8000毫秒 = 8秒 (包含探頭的3秒，等於每躲藏5秒就會出來一次)
 }
