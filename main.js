@@ -20,16 +20,7 @@ var aiStoreConfig = {
   "官方LINE": "@843qpnet",
   "外部課程": "6月20/21/27/28共四天有「用 AI 打造你的全自動化數位商店」課程，報名方式請洽官LINE"
 };
-const COMMON_INFO_BTNS = `
-  <div class="info-card-btn" onclick="toggleDrawer('rules-content', '教室使用規章')">
-    <span style="font-size: 1.5em;">教室規章</span>
-    <small style="color:#f089a1; margin-top: 8px;">查看詳情 ➔</small>
-  </div>
-  <div class="info-card-btn" onclick="toggleDrawer('payment-info-content', '匯款帳戶資訊')">
-    <span style="font-size: 1.5em;">匯款資訊</span>
-    <small style="color:#f089a1; margin-top: 8px;">查看帳號 ➔</small>
-  </div>
-`;
+
 let aiStime = 0;
 let aiEtime = 0;
 let textTimer;
@@ -2616,10 +2607,6 @@ function validateNumber(obj) {
 }
 
 function injectCommonRules() {
-  const containers = document.querySelectorAll('.rules-container');
-  containers.forEach(container => {
-    container.innerHTML = COMMON_INFO_BTNS;
-  });
   formatButtonText();
   startRandomJitter();
   startPeekabooEgg();
@@ -2651,7 +2638,7 @@ function startRandomJitter() {
       
     }, 50); // 50 毫秒的緩衝
 
-  }, 1400); 
+  }, 2000); 
 }
 
 // 確保在頁面載入後執行
@@ -4455,12 +4442,8 @@ document.addEventListener('click', function (event) {
 
 // 1. 監聽滾動事件，動態偵測「當前啟用 Tab」裡的 INFOBOX
 window.addEventListener('scroll', function () {
-  // 🔥 關鍵修改 1：找出當前正在顯示的 Tab 區塊
-  const activeTab = document.querySelector('.tab-content.active');
-  if (!activeTab) return;
-
-  // 🔥 關鍵修改 2：只抓取該 Tab 裡面的 info-box (會自動對應 ifb-course 或 ifb-room)
-  const infoBox = activeTab.querySelector('.info-box');
+  const infoBox = document.querySelector('.info-box');
+  if (!infoBox) return;
   const stickyNav = document.getElementById('stickyQuickNav');
   const drawer = document.getElementById('quickMenuDrawer');
   const btn = document.getElementById('quickMenuBtn');
@@ -4494,13 +4477,7 @@ function toggleQuickMenu() {
 
   if (isOpening) {
     list.innerHTML = '';
-
-    // 🔥 關鍵修改 3：先鎖定「當前啟用」的 Tab
-    const activeTab = document.querySelector('.tab-content.active');
-    if (!activeTab) return;
-
-    // 🔥 關鍵修改 4：只抓取該 Tab 裡面的 info-card-btn，過濾掉隱藏的
-    const cards = activeTab.querySelectorAll('.info-card-btn');
+    const cards = document.querySelectorAll('.info-card-btn');
 
     cards.forEach(card => {
       const span = card.querySelector('span');
