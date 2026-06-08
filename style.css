@@ -3117,7 +3117,6 @@ select {
   justify-content: center;
   align-items: center;
   width: 100%;
-  margin: 20px 0;
 }
 
 /* 控制整張圖在螢幕中間的大小 */
@@ -3133,7 +3132,7 @@ select {
    ========================================= */
 @media (max-width: 600px) {
   #svg1 {
-    width: 100vw !important; 
+    width: 80vw !important; 
     max-width: none !important;
     transform: scale(1.1) !important; 
     transform-origin: center center !important;
@@ -3192,7 +3191,7 @@ select {
 .bottom-loading-group {
   position: absolute;
   /* 與上方的 calc(7% + 75px) 形成完美的上下對稱 */
-  bottom: calc(7% + 65px); 
+  bottom: calc(0% + 75px); 
   left: 50%;
   transform: translateX(-50%);
   z-index: 10001; /* 確保在遮罩之上 */
@@ -3203,39 +3202,12 @@ select {
   width: 200px; /* 控制進度條的長度 */
 }
 
-/* 進度條軌道 (半透明白底) */
-.progress-bar-track {
-  width: 100%;
-  height: 6px;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 4px;
-  overflow: hidden;
-}
-
-/* 進度條填滿動畫 (發光白條) */
-.progress-bar-fill {
-  height: 100%;
-  width: 0%;
-  background: #ffffff;
-  border-radius: 4px;
-  box-shadow: 0 0 8px rgba(255, 255, 255, 0.8); /* 自帶微微發光效果 */
-  /* 1.5秒從0跑到100%，無限循環 */
-  animation: loadingRun 1.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-}
-
-/* 跑條的動畫軌跡 */
-@keyframes loadingRun {
-  0% { width: 0%; }
-  100% { width: 100%; }
-}
-
 /* 底部的 LOADING 文字 */
 .bottom-loading-text {
-  font-size: 1.1rem;
-  letter-spacing: 5px; /* 字距拉開更有質感 */
+  font-size: 1rem;
+  letter-spacing: 5px;
   color: #ffffff;
   font-weight: bold;
-  /* 直接重複利用你已經寫好的 breathText 呼吸動畫 */
   animation: breathText 0.5s infinite ease-in-out; 
 }
 
@@ -3565,4 +3537,16 @@ select {
   background: linear-gradient(to right, rgba(232, 122, 144, 0.5) 0%, rgba(232, 122, 144, 0) 100%);
   z-index: -1;            /* 把底線墊在文字正後方 */
   border-radius: 4px;     /* 讓線條邊緣圓潤一點 */
+}
+
+/* 外層容器置中 */
+.custom-loader-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.custom-spinner {
+  width: 50px;
+  height: 50px;
 }

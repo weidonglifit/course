@@ -2703,6 +2703,7 @@ function closeOverlay() {
   }
   const overlay = document.getElementById('video-overlay');
   if (overlay) {
+    closeOverlayAndAnimateLogo();
     overlay.classList.add('exit-animation'); // 直接套用 CSS 動畫
 
     const aiWidget = document.getElementById('ai-chat-widget');
@@ -4816,4 +4817,188 @@ function startPeekabooEgg() {
     }, 3000);
 
   }, 8000); // 8000毫秒 = 8秒 (包含探頭的3秒，等於每躲藏5秒就會出來一次)
+}
+
+function closeOverlayAndAnimateLogo() {
+  const logo = document.getElementById('logo-container');
+  const targetWrapper = document.getElementById('final-logo-wrapper');
+  
+  if (!logo || !targetWrapper) {
+    console.warn("⚠️ [Error] 找不到 logo 或目標容器");
+    return;
+  }
+
+  const innerSvg = logo.querySelector('svg');
+  if (!innerSvg) {
+    console.warn("⚠️ [Error] 找不到 innerSvg");
+    return;
+  }
+
+  const startRect = innerSvg.getBoundingClientRect();
+  const targetRect = targetWrapper.getBoundingClientRect();
+  const wrapperStyle = window.getComputedStyle(targetWrapper);
+
+  if (startRect.width === 0) {
+    console.warn("⚠️ [Error] startRect 寬度為 0，取消動畫");
+    return;
+  }
+
+  // 1. 準備起飛，設定外層容器初始狀態
+  document.body.appendChild(logo);
+  logo.style.position = 'fixed';
+  logo.style.left = startRect.left + 'px';
+  logo.style.top = startRect.top + 'px';
+  logo.style.width = startRect.width + 'px';
+  logo.style.height = startRect.height + 'px';
+  logo.style.margin = '0';
+  logo.style.padding = '0';
+  logo.style.zIndex = '999999';
+
+  innerSvg.style.width = '100%';
+  innerSvg.style.height = '100%';
+  innerSvg.style.overflow = 'visible';
+  
+
+  // 2. 清除所有干擾的舊動畫與保護衣
+  logo.classList.remove('svg-intro-container');
+  logo.style.animation = 'none';
+  logo.querySelectorAll('.anim-wrapper').forEach(w => {
+    w.style.animation = 'none';
+    w.style.transform = 'none';
+    w.style.opacity = '1';
+  });
+
+  // ==========================================
+  // ✨ 3. 大師級數學：計算 viewBox 與內部偏移 ✨
+  // ==========================================
+  const mc0 = logo.querySelector('#layer-MC0');
+  const mc1 = logo.querySelector('#layer-MC1');
+  if (!mc0 || !mc1) return;
+
+  const box0 = mc0.getBBox();
+  const box1 = mc1.getBBox();
+
+  let startVB = [0, 0, 32, 32];
+  const vbAttr = innerSvg.getAttribute('viewBox');
+  if (vbAttr) startVB = vbAttr.trim().split(/[\s,]+/).map(Number);
+
+  const finalScale = box1.height / box0.height;
+  const gap = box1.height * 0.15;
+  const targetX = box1.x - gap - (box0.width * finalScale);
+  const targetY = box1.y + (box1.height - box0.height * finalScale) / 2;
+
+  const endTx = targetX - (box0.x * finalScale);
+  const endTy = targetY - (box0.y * finalScale);
+
+  const minX = targetX;
+  const maxX = box1.x + box1.width;
+  const minY = Math.min(targetY, box1.y);
+  const maxY = Math.max(targetY + box0.height * finalScale, box1.y + box1.height);
+
+  const contentW = maxX - minX;
+  const contentH = maxY - minY;
+  const endVB = [minX, minY, contentW, contentH];
+
+  // ==========================================
+  // ✨ 4. 核心物理尺寸與 Flex 置中數學模擬 ✨
+  // ==========================================
+  const finalRatio = endVB[2] / endVB[3];
+  const physicalWidth = 75 * finalRatio;
+
+  const finalLeft = targetRect.left + (targetRect.width - physicalWidth) / 2;
+  const finalTop = targetRect.top + (targetRect.height - 75) / 2;
+
+  // ==========================================
+  // ✨ 5. 啟動電影級飛行 ✨
+  // ==========================================
+  logo.style.transition = 'all 0.8s cubic-bezier(0.25, 1, 0.5, 1)';
+  
+  requestAnimationFrame(() => {
+    logo.style.left = finalLeft + 'px';
+    logo.style.top = finalTop + 'px';
+    logo.style.width = physicalWidth + 'px';
+    logo.style.height = '75px';
+  });
+
+  const duration = 1500;
+  const startTime = performance.now();
+    
+  function tween(currentTime) {
+    const elapsed = currentTime - startTime;
+    let progress = Math.min(elapsed / duration, 1);
+    const ease = 1 - Math.pow(1 - progress, 4); 
+
+    // 1. 【關鍵】：飛行路徑中的「寬度補間」
+    // 從起點寬度平滑過渡到我們算出來的物理終點寬度
+    const currentWidth = startRect.width + (physicalWidth - startRect.width) * ease;
+    const currentHeight = startRect.height + (75 - startRect.height) * ease;
+
+    // 2. 更新 SVG 內部的 viewBox 與 transform (不動)
+    const currentVB = startVB.map((startVal, i) => startVal + (endVB[i] - startVal) * ease);
+    innerSvg.setAttribute('viewBox', currentVB.join(' '));
+
+    const currentTx = endTx * ease;
+    const currentTy = endTy * ease;
+    const currentS = 1 + (finalScale - 1) * ease;
+    mc0.setAttribute('transform', `translate(${currentTx}, ${currentTy}) scale(${currentS})`);
+
+    // 3. 【強制應用】：每一幀都更新外層容器寬度，讓它「按正確的路徑縮小」
+    logo.style.width = currentWidth + 'px';
+    logo.style.height = currentHeight + 'px';
+
+    // 4. 動態更新飛行位置 (結合我們剛算好的絕對置中點)
+    // 這裡我們修正為：每一幀都計算目標，確保路徑偏移被消滅
+    const currentLeft = startRect.left + (finalLeft - startRect.left) * ease;
+    const currentTop = startRect.top + (finalTop - startRect.top) * ease;
+    logo.style.left = currentLeft + 'px';
+    logo.style.top = currentTop + 'px';
+
+    if (progress < 1) {
+      requestAnimationFrame(tween);
+    } else {
+      // ==========================================
+      // ✨ 6. 極致純淨落地接軌 (不碰任何 SVG 內部屬性) ✨
+      // ==========================================
+      
+
+      // 1. 設定外層目標容器為 Flex 置中
+      targetWrapper.style.display = 'flex';
+      targetWrapper.style.justifyContent = 'center';
+      targetWrapper.style.alignItems = 'center';
+      targetWrapper.style.overflow = 'visible'; 
+
+      // 2. 拔除飛行狀態的 fixed，恢復相對定位讓 Flex 接手
+      logo.style.position = 'relative';
+      logo.style.left = 'auto';
+      logo.style.top = 'auto';
+      logo.style.zIndex = 'auto';
+      logo.style.transition = 'none';
+
+      // 3. 嚴格鎖定外層 DOM 容器的尺寸 (不要用 Math.round，保留小數點精確度)
+      logo.style.cssText = `
+        display: block !important;
+        width: ${physicalWidth}px !important;
+        height: 75px !important;
+        flex-shrink: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        max-width: none !important;
+        min-width: ${physicalWidth}px !important;
+      `;
+
+      // 🚫 【關鍵排雷】：不要再去覆寫 innerSvg.style.cssText
+      // 🚫 【關鍵排雷】：不要去 removeAttribute('preserveAspectRatio')
+      // 🚫 【關鍵排雷】：不要去 setAttribute('width', Math.round(physicalWidth))
+      // 讓 SVG 保持最後一幀 (progress = 1) 時最完美的狀態！
+
+      // 4. 清除舊圖並放入
+      const oldImg = targetWrapper.querySelector('img');
+      if (oldImg) oldImg.remove();
+      targetWrapper.appendChild(logo);
+      
+      
+      
+    }
+  }
+  requestAnimationFrame(tween);
 }
