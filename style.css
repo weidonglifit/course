@@ -1879,26 +1879,14 @@ select {
 
 .notice-pulse-container {
   width: 100%;
-  background: linear-gradient(135deg, #FFF0F2 0%, #FFE5E9 100%);
-  border: 1px solid #F4A7B9;
+  /* background: linear-gradient(135deg, #FFF0F2 0%, #FFE5E9 100%); */
+  /* border: 1px solid #F4A7B9; */
   border-radius: 12px;
-  margin: 15px 0;
-  padding: 7px 12px;
+  /* margin: 15px 0; */
+  /* padding: 7px 12px; */
   box-sizing: border-box;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  /* box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); */
   text-align: center;
-
-  /* 綁定慢速縮放呼吸動畫 */
-  /* animation: soft-pulse 3s ease-in-out infinite; */
-}
-
-/* 2. 提示框主標題 */
-.notice-pulse-title {
-  color: #D05A6E;
-  font-weight: bold;
-  font-size: 1.15rem;
-  letter-spacing: 1px;
-  line-height: 1.5;
 }
 
 /* 3. 核心警告內文 */
@@ -1907,23 +1895,8 @@ select {
   font-weight: bold;
   font-size: 1.2rem;
   line-height: 1.6;
+  letter-spacing: 2px;
   margin-top: 4px;
-}
-
-/* 溫柔的呼吸律動動畫 */
-@keyframes soft-pulse {
-  0% {
-    transform: scale(0.95);
-  }
-
-  50% {
-    transform: scale(1.02);
-    /* 僅微幅放大 2%，在手機上極其優雅不刺眼 */
-  }
-
-  100% {
-    transform: scale(0.95);
-  }
 }
 
 /* 早鳥倒數計時器專屬樣式 */
@@ -1931,14 +1904,12 @@ select {
   width: 100%;
   margin: 15px 0;
   padding: 12px;
-  background: linear-gradient(135deg, #FFF0F2 0%, #FFE5E9 100%);
+  /* background: linear-gradient(135deg, #FFF0F2 0%, #FFE5E9 100%); */
   border: 1px solid #F4A7B9;
   border-radius: 12px;
   box-sizing: border-box;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
   text-align: center;
-  /* 綁定與提示框相同的呼吸動畫，讓視覺更具一體感 */
-  /* animation: soft-pulse 3s ease-in-out infinite; */
 }
 
 .countdown-box {
@@ -3579,4 +3550,45 @@ select {
   max-width: 150px; /* 給予足夠的寬度容納文字 */
   opacity: 1;
   transform: translateX(0);
+}
+
+/* --- 方案一：全正數化完美動畫 --- */
+
+/* 外圈動畫 */
+.ring-anim {
+  animation: dash-ring 2s linear infinite;
+}
+@keyframes dash-ring {
+  /* 原本是 88 -> 0 -> -88，全部加上 176 */
+  0% { stroke-dashoffset: 264; }
+  50% { stroke-dashoffset: 176; }
+  100% { stroke-dashoffset: 88; }
+}
+
+/* 小圓點透明度動畫 (沒有負數 Bug，維持原樣) */
+.dot-anim {
+  animation: fade-dot 2s linear infinite;
+}
+@keyframes fade-dot {
+  0% { opacity: 0; }
+  50% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* 波浪線動畫 */
+.wave-anim {
+  animation: dash-wave 2s linear infinite;
+}
+@keyframes dash-wave {
+  /* 原本是 -19 -> 0 -> 19，全部加上 38 */
+  0% { stroke-dashoffset: 19; }
+  50% { stroke-dashoffset: 38; }
+  100% { stroke-dashoffset: 57; }
+}
+
+.announcement-card {
+  perspective: 1000px;
+  margin-bottom: 15px;
+  background: transparent !important;
+  cursor: pointer;
 }
