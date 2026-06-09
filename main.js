@@ -73,9 +73,6 @@ window.addEventListener('load', function () {
       // 2. 處理網頁與表單標題
       //document.getElementById('main-title').innerText = globalSettings.title[0] + "\n課程報名｜教室預約";
       document.getElementById('main-title').innerHTML = `
-  <span style="font-size: 0.95em; font-weight: 300; letter-spacing: 4px;">
-    微微的動
-  </span>
   <svg xmlns="http://www.w3.org/2000/svg" 
        width="0.75em" 
        height="0.75em" 
@@ -89,9 +86,6 @@ window.addEventListener('load', function () {
     <line x1="18" y1="6" x2="6" y2="18"></line>
     <line x1="6" y1="6" x2="18" y2="18"></line>
   </svg>
-  <span style="font-size: 0.95em; font-weight: 300; letter-spacing: 4px;">
-    慢慢身活
-  </span>
 `;
       document.getElementById('all-course-title').innerHTML = `
       <span style="display: inline-flex; align-items: center; justify-content: center; gap: 8px;">
@@ -4819,6 +4813,39 @@ function startPeekabooEgg() {
   }, 8000); // 8000毫秒 = 8秒 (包含探頭的3秒，等於每躲藏5秒就會出來一次)
 }
 
+function expandMainTitle() {
+  const titleEl = document.getElementById('main-title');
+  
+  // 1. 置換 HTML 內容，並套用剛剛在 CSS 寫好的 Class
+  titleEl.innerHTML = `
+    <span class="anim-text anim-text-left" style="font-size: 0.95em; font-weight: 300; letter-spacing: 4px;">
+      微微的動
+    </span>
+    <svg xmlns="http://www.w3.org/2000/svg" 
+         width="0.75em" 
+         height="0.75em" 
+         viewBox="0 0 24 24" 
+         fill="none" 
+         stroke="currentColor" 
+         stroke-width="1" 
+         stroke-linecap="round" 
+         stroke-linejoin="round" 
+         style="vertical-align: middle; margin: 0 12px; opacity: 0.8;">
+      <line x1="18" y1="6" x2="6" y2="18"></line>
+      <line x1="6" y1="6" x2="18" y2="18"></line>
+    </svg>
+    <span class="anim-text anim-text-right" style="font-size: 0.95em; font-weight: 300; letter-spacing: 4px;">
+      慢慢身活
+    </span>
+  `;
+
+  // 2. 強制瀏覽器重繪 (Reflow)，讓瀏覽器抓到初始的 max-width: 0
+  void titleEl.offsetWidth;
+
+  // 3. 加上 .title-expanded 來觸發 CSS 的 transition 動畫
+  titleEl.classList.add('title-expanded');
+}
+
 function closeOverlayAndAnimateLogo() {
   const logo = document.getElementById('logo-container');
   const targetWrapper = document.getElementById('final-logo-wrapper');
@@ -4837,6 +4864,7 @@ function closeOverlayAndAnimateLogo() {
   const startRect = innerSvg.getBoundingClientRect();
   const targetRect = targetWrapper.getBoundingClientRect();
   const wrapperStyle = window.getComputedStyle(targetWrapper);
+  const targetHeight = targetRect.height;
 
   if (startRect.width === 0) {
     console.warn("⚠️ [Error] startRect 寬度為 0，取消動畫");
@@ -4903,10 +4931,10 @@ function closeOverlayAndAnimateLogo() {
   // ✨ 4. 核心物理尺寸與 Flex 置中數學模擬 ✨
   // ==========================================
   const finalRatio = endVB[2] / endVB[3];
-  const physicalWidth = 75 * finalRatio;
+  const physicalWidth = targetHeight * finalRatio;
 
   const finalLeft = targetRect.left + (targetRect.width - physicalWidth) / 2;
-  const finalTop = targetRect.top + (targetRect.height - 75) / 2;
+  const finalTop = targetRect.top + (targetRect.height - targetHeight) / 2;
 
   // ==========================================
   // ✨ 5. 啟動電影級飛行 ✨
@@ -4917,7 +4945,7 @@ function closeOverlayAndAnimateLogo() {
     logo.style.left = finalLeft + 'px';
     logo.style.top = finalTop + 'px';
     logo.style.width = physicalWidth + 'px';
-    logo.style.height = '75px';
+    logo.style.height = targetHeight + 'px';
   });
 
   const duration = 1500;
@@ -4931,7 +4959,7 @@ function closeOverlayAndAnimateLogo() {
     // 1. 【關鍵】：飛行路徑中的「寬度補間」
     // 從起點寬度平滑過渡到我們算出來的物理終點寬度
     const currentWidth = startRect.width + (physicalWidth - startRect.width) * ease;
-    const currentHeight = startRect.height + (75 - startRect.height) * ease;
+    const currentHeight = startRect.height + (targetHeight - startRect.height) * ease;
 
     // 2. 更新 SVG 內部的 viewBox 與 transform (不動)
     const currentVB = startVB.map((startVal, i) => startVal + (endVB[i] - startVal) * ease);
@@ -4978,7 +5006,7 @@ function closeOverlayAndAnimateLogo() {
       logo.style.cssText = `
         display: block !important;
         width: ${physicalWidth}px !important;
-        height: 75px !important;
+        height: ${targetHeight}px !important;
         flex-shrink: 0 !important;
         margin: 0 !important;
         padding: 0 !important;
@@ -4986,18 +5014,8 @@ function closeOverlayAndAnimateLogo() {
         min-width: ${physicalWidth}px !important;
       `;
 
-      // 🚫 【關鍵排雷】：不要再去覆寫 innerSvg.style.cssText
-      // 🚫 【關鍵排雷】：不要去 removeAttribute('preserveAspectRatio')
-      // 🚫 【關鍵排雷】：不要去 setAttribute('width', Math.round(physicalWidth))
-      // 讓 SVG 保持最後一幀 (progress = 1) 時最完美的狀態！
-
-      // 4. 清除舊圖並放入
-      const oldImg = targetWrapper.querySelector('img');
-      if (oldImg) oldImg.remove();
       targetWrapper.appendChild(logo);
-      
-      
-      
+      expandMainTitle();
     }
   }
   requestAnimationFrame(tween);
