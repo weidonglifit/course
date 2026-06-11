@@ -1902,8 +1902,8 @@ select {
 
 /* 早鳥倒數計時器專屬樣式 */
 #earlybird-countdown-container {
-  width: 100%;
-  margin: 15px 0;
+  width: fit-content;
+  margin: 15px auto;
   padding: 12px;
   /* background: linear-gradient(135deg, #FFF0F2 0%, #FFE5E9 100%); */
   border: 1px solid #F4A7B9;
@@ -1929,27 +1929,19 @@ select {
 
 .countdown-timer {
   font-family: 'Courier New', Courier, monospace;
-  /* 使用等寬字體防止數字跳動縮放 */
-  font-size: 1.4rem;
   font-weight: bold;
-  color: #e74c3c;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 2px;
 }
 
 .countdown-timer span {
-  background: #ffffff;
-  color: #e74c3c;
-  padding: 2px 6px;
-  border-radius: 6px;
-  border: 1px solid #F4A7B9;
-  min-width: 32px;
+  color: #E87A90;
+  padding: 2px 2px;
+  border-radius: 20px;
   display: inline-flex; 
   justify-content: center;
   align-items: center;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
   overflow: hidden; 
 }
 
@@ -1984,8 +1976,8 @@ select {
 }
 .countdown-timer small {
   font-size: 0.85rem;
-  color: #d14d72;
-  margin: 0 4px 0 2px;
+  color: #E87A90;
+  margin: 0;
   font-weight: normal;
 }
 
@@ -3690,4 +3682,74 @@ select {
 #menu-icon.active .bottom {
   /* 往上位移到中間，並逆時針轉 45 度 */
   transform: translate(0, -6px) rotate(-45deg);
+}
+
+/* 圓圈計時器主容器 */
+.countdown-timer.circle-theme {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  background: transparent;
+}
+
+/* 單個圈圈的容器 */
+.cd-item {
+  position: relative;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* SVG 畫布：轉向讓起點在正上方(12點鐘)，並水平翻轉達成逆時針縮退 */
+.cd-svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: rotate(-90deg) scaleX(1);
+}
+
+/* 底部灰色底圈 */
+.cd-bg {
+  fill: none;
+  stroke: #f0f0f0;
+  stroke-width: 5;
+}
+
+/* 動態進度圈 */
+.cd-ring {
+  fill: none;
+  stroke: #E87A90; /* 您的品牌粉色 */
+  stroke-width: 5;
+  stroke-linecap: round;
+  stroke-dasharray: 163.36; /* 2 * Math.PI * 26 (半徑) */
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset 1s linear;
+}
+
+/* 內部文字區塊 */
+.cd-text {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+
+/* 數字樣式 */
+.cd-text span {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: #E87A90;
+  line-height: 1;
+}
+
+/* 底部 DAY/HOUR/MIN 樣式 */
+.cd-text small {
+  font-size: 0.65rem;
+  color: #d14d72;
+  font-weight: bold;
 }

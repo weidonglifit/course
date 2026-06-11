@@ -9,7 +9,7 @@
   <meta name="keywords" content="微動身活, 新竹舞蹈教室, 新竹租教室, 北區舞蹈空間, 舞蹈課表, 共享舞室">
   <meta property="og:title" content="微動身活 | 共享舞蹈空間">
   <meta property="og:image"
-    content="https://raw.githubusercontent.com/weidonglifit/course/refs/heads/main/weidong_title.jpg">
+    content="https://raw.githubusercontent.com/weidonglifit/course/refs/heads/main/weidong_logoL.jpg">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://weidonglifit.github.io/course/">
   <meta property="og:description" content="微動身活位於新竹市北區，提供最舒適的共享舞蹈空間、即時課表查詢、線上報名系統。">
@@ -17,7 +17,7 @@
   <link rel="canonical" href="https://weidonglifit.github.io/course/" />
   <title>微動身活 | 新竹共享舞蹈空間與教室租借</title>
   <link rel="icon" type="image/png"
-    href="https://raw.githubusercontent.com/weidonglifit/course/refs/heads/main/icon_c.png">
+    href="https://raw.githubusercontent.com/weidonglifit/course/refs/heads/main/icon_c2.png">
   <base target="_top">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
   <script type="application/ld+json">
@@ -36,7 +36,11 @@
     "url": "https://weidonglifit.github.io/course/"
   }
   </script>
-
+  <script>
+    if ('scrollRestoration' in history) {
+      history.scrollRestoration = 'manual';
+    }
+  </script>
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
   <link rel="stylesheet" href="./style.css">
 </head>
@@ -290,11 +294,50 @@
                     </svg>
                     距離早鳥優惠截止還剩：
                   </span>
-                  <div class="countdown-timer">
-                    <span id="cd-days">00</span><small>天</small>
-                    <span id="cd-hours">00</span><small>時</small>
-                    <span id="cd-minutes">00</span><small>分</small>
-                    <span id="cd-seconds">00</span><small>秒</small>
+                  <div class="countdown-timer circle-theme">
+                    <div class="cd-item">
+                      <svg class="cd-svg" width="60" height="60">
+                        <circle class="cd-bg" cx="30" cy="30" r="26"></circle>
+                        <circle class="cd-ring" id="ring-days" cx="30" cy="30" r="26"></circle>
+                      </svg>
+                      <div class="cd-text">
+                        <span id="cd-days">00</span>
+                        <small>DAY</small>
+                      </div>
+                    </div>
+
+                    <div class="cd-item">
+                      <svg class="cd-svg" width="60" height="60">
+                        <circle class="cd-bg" cx="30" cy="30" r="26"></circle>
+                        <circle class="cd-ring" id="ring-hours" cx="30" cy="30" r="26"></circle>
+                      </svg>
+                      <div class="cd-text">
+                        <span id="cd-hours">00</span>
+                        <small>HOUR</small>
+                      </div>
+                    </div>
+
+                    <div class="cd-item">
+                      <svg class="cd-svg" width="60" height="60">
+                        <circle class="cd-bg" cx="30" cy="30" r="26"></circle>
+                        <circle class="cd-ring" id="ring-minutes" cx="30" cy="30" r="26"></circle>
+                      </svg>
+                      <div class="cd-text">
+                        <span id="cd-minutes">00</span>
+                        <small>MIN</small>
+                      </div>
+                    </div>
+
+                    <div class="cd-item">
+                      <svg class="cd-svg" width="60" height="60">
+                        <circle class="cd-bg" cx="30" cy="30" r="26"></circle>
+                        <circle class="cd-ring" id="ring-seconds" cx="30" cy="30" r="26"></circle>
+                      </svg>
+                      <div class="cd-text">
+                        <span id="cd-seconds">00</span>
+                        <small>SEC</small>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>

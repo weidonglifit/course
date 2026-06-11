@@ -186,18 +186,46 @@ window.addEventListener('load', function () {
             return;
           }
 
+          // 計算時間
           const days = Math.floor(distance / (1000 * 60 * 60 * 24));
           const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
           const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
           const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
           if (countdownContainer && countdownContainer.style.display === 'none') {
-            countdownContainer.style.display = 'block'; // 確保時間未到時可見
+            countdownContainer.style.display = 'block';
           }
+
+          // 1. 更新中間的文字數字
           if (dEl) animateCountdownValue(dEl, String(days).padStart(2, '0'));
           if (hEl) animateCountdownValue(hEl, String(hours).padStart(2, '0'));
           if (mEl) animateCountdownValue(mEl, String(minutes).padStart(2, '0'));
-          if (sEl) animateCountdownValue(sEl, String(seconds).padStart(2, '0'));
+          // 記得獲取您頁面上的秒數元素 sEl (例如：const sEl = document.getElementById('cd-seconds');)
+          if (typeof sEl !== 'undefined' && sEl) animateCountdownValue(sEl, String(seconds).padStart(2, '0'));
+
+          // 2. 計算與更新外圍圓圈的進度 (圓周長 163.36)
+          const circumference = 163.36;
+
+          // 天的圓圈 (一圈 30 天)
+          let dPercent = days / 30;
+          if (dPercent > 1) dPercent = 1;
+          const dRing = document.getElementById('ring-days');
+          if (dRing) dRing.style.strokeDashoffset = circumference - (circumference * dPercent);
+
+          // 時的圓圈 (一圈 24 小時)
+          let hPercent = hours / 24;
+          const hRing = document.getElementById('ring-hours');
+          if (hRing) hRing.style.strokeDashoffset = circumference - (circumference * hPercent);
+
+          // 分的圓圈 (一圈 60 分)
+          let mPercent = minutes / 60;
+          const mRing = document.getElementById('ring-minutes');
+          if (mRing) mRing.style.strokeDashoffset = circumference - (circumference * mPercent);
+
+          // 秒的圓圈 (一圈 60 秒)
+          let sPercent = seconds / 60;
+          const sRing = document.getElementById('ring-seconds');
+          if (sRing) sRing.style.strokeDashoffset = circumference - (circumference * sPercent);
         }
 
         updateCountdown();
@@ -2673,7 +2701,6 @@ function closeOverlay() {
   if (textTimer) {
     clearInterval(textTimer);
   }
-  window.scrollTo({ top: 0, behavior: 'smooth' });
   const overlay = document.getElementById('video-overlay');
   if (overlay) {
     closeOverlayAndAnimateLogo();
