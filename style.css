@@ -511,14 +511,6 @@ select {
   /* 微幅放大，製造彈跳感 */
 }
 
-
-
-/* 額外建議：確保包裝層也是 100% 寬度 */
-.course-filter-wrapper {
-  display: block;
-  width: 100%;
-}
-
 /* 1. 平時外觀：讓它低調一點，使用淡淡的灰色邊框（不搶課程卡片的風采） */
 
 .agreement-item {
@@ -2256,7 +2248,7 @@ select {
   /* 讓文字與圖示在容器內置中 */
   width: fit-content;
   /* 讓寬度剛好符合文字長度，使下底線長度正確 */
-  margin: 15px auto;
+  margin: 0 auto 15px auto;
   /* 上下保留 15px 邊距，左右 auto 達成區塊置中 */
   transition: all 0.3s ease;
   border-bottom: 1px dashed #E87A90;
@@ -3673,4 +3665,29 @@ select {
   opacity: 1;
   transform: translateY(0); /* 回到原本的位置 */
   pointer-events: auto;     /* 恢復可以點擊點開地圖 */
+}
+
+#menu-icon .menu-line {
+  transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+}
+
+/* 固定每條線的旋轉中心點在自己身上的正中央 (X=12, Y=線的高度) */
+#menu-icon .top    { transform-origin: 12px 6px; }
+#menu-icon .middle { transform-origin: 12px 12px; }
+#menu-icon .bottom { transform-origin: 12px 18px; }
+
+/* 當 SVG 獲得 .active class 時，觸發變形變成 X */
+#menu-icon.active .top {
+  /* 往下位移到中間，並順時針轉 45 度 */
+  transform: translate(0, 6px) rotate(45deg);
+}
+
+#menu-icon.active .middle {
+  /* 中間的線淡出消失 */
+  opacity: 0;
+}
+
+#menu-icon.active .bottom {
+  /* 往上位移到中間，並逆時針轉 45 度 */
+  transform: translate(0, -6px) rotate(-45deg);
 }

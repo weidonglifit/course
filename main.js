@@ -30,13 +30,15 @@ class CustomNoticePulse extends HTMLElement {
     this.innerHTML = `
       <div class="notice-pulse-container">
         <div class="notice-pulse-text" style="display: inline-flex; align-items: center; gap: 6px;">
-          <svg class="flicker-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" style="width: 25px; height: 25px; fill: #e74c3c;">
-            <path d="M320 64C334.7 64 348.2 72.1 355.2 85L571.2 485C577.9 497.4 577.6 512.4 570.4 524.5C563.2 536.6 550.1 544 536 544L104 544C89.9 544 76.8 536.6 69.6 524.5C62.4 512.4 62.1 497.4 68.8 485L284.8 85C291.8 72.1 305.3 64 320 64zM320 416C302.3 416 288 430.3 288 448C288 465.7 302.3 480 320 480C337.7 480 352 465.7 352 448C352 430.3 337.7 416 320 416zM320 224C301.8 224 287.3 239.5 288.6 257.7L296 361.7C296.9 374.2 307.4 384 319.9 384C332.5 384 342.9 374.3 343.8 361.7L351.2 257.7C352.5 239.5 338.1 224 319.8 224z" />
-          </svg>
+        <svg class="flicker-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" style="width: 25px; height: 25px; fill: #F4D03F;">
+        <!--!Font Awesome Free v7.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.-->
+        <path d="M424.5 355.1C449 329.2 464 294.4 464 256C464 176.5 399.5 112 320 112C240.5 112 176 176.5 176 256C176 294.4 191 329.2 215.5 355.1C236.8 377.5 260.4 409.1 268.8 448L371.2 448C379.6 409 403.2 377.5 424.5 355.1zM459.3 388.1C435.7 413 416 443.4 416 477.7L416 496C416 540.2 380.2 576 336 576L304 576C259.8 576 224 540.2 224 496L224 477.7C224 443.4 204.3 413 180.7 388.1C148 353.7 128 307.2 128 256C128 150 214 64 320 64C426 64 512 150 512 256C512 307.2 492 353.7 459.3 388.1zM272 248C272 261.3 261.3 272 248 272C234.7 272 224 261.3 224 248C224 199.4 263.4 160 312 160C325.3 160 336 170.7 336 184C336 197.3 325.3 208 312 208C289.9 208 272 225.9 272 248z"/>
+        </svg>
           請一次報名一人唷
-          <svg class="flicker-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" style="width: 25px; height: 25px; fill: #e74c3c;">
-            <path d="M320 64C334.7 64 348.2 72.1 355.2 85L571.2 485C577.9 497.4 577.6 512.4 570.4 524.5C563.2 536.6 550.1 544 536 544L104 544C89.9 544 76.8 536.6 69.6 524.5C62.4 512.4 62.1 497.4 68.8 485L284.8 85C291.8 72.1 305.3 64 320 64zM320 416C302.3 416 288 430.3 288 448C288 465.7 302.3 480 320 480C337.7 480 352 465.7 352 448C352 430.3 337.7 416 320 416zM320 224C301.8 224 287.3 239.5 288.6 257.7L296 361.7C296.9 374.2 307.4 384 319.9 384C332.5 384 342.9 374.3 343.8 361.7L351.2 257.7C352.5 239.5 338.1 224 319.8 224z" />
-          </svg>
+        <svg class="flicker-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" style="width: 25px; height: 25px; fill: #F4D03F;">
+        <!--!Font Awesome Free v7.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.-->
+        <path d="M424.5 355.1C449 329.2 464 294.4 464 256C464 176.5 399.5 112 320 112C240.5 112 176 176.5 176 256C176 294.4 191 329.2 215.5 355.1C236.8 377.5 260.4 409.1 268.8 448L371.2 448C379.6 409 403.2 377.5 424.5 355.1zM459.3 388.1C435.7 413 416 443.4 416 477.7L416 496C416 540.2 380.2 576 336 576L304 576C259.8 576 224 540.2 224 496L224 477.7C224 443.4 204.3 413 180.7 388.1C148 353.7 128 307.2 128 256C128 150 214 64 320 64C426 64 512 150 512 256C512 307.2 492 353.7 459.3 388.1zM272 248C272 261.3 261.3 272 248 272C234.7 272 224 261.3 224 248C224 199.4 263.4 160 312 160C325.3 160 336 170.7 336 184C336 197.3 325.3 208 312 208C289.9 208 272 225.9 272 248z"/>
+        </svg>
         </div>
       </div>
     `;
@@ -74,19 +76,20 @@ window.addEventListener('load', function () {
       // 2. 處理網頁與表單標題
       //document.getElementById('main-title').innerText = globalSettings.title[0] + "\n課程報名｜教室預約";
       document.getElementById('main-title').innerHTML = `
-  <svg xmlns="http://www.w3.org/2000/svg" 
-     width="0.9em" 
-     height="0.9em" 
-     viewBox="0 0 24 24" 
-     fill="none" 
-     stroke="currentColor" 
-     stroke-width="1" 
-     stroke-linecap="round" 
-     stroke-linejoin="round" 
-     style="vertical-align: middle; margin: 0 12px; opacity: 0.6; transform: rotate(45deg);">
-  <line x1="18" y1="6" x2="6" y2="18"></line>
-  <line x1="6" y1="6" x2="18" y2="18"></line>
-</svg>
+  <svg id="menu-icon" xmlns="http://www.w3.org/2000/svg" 
+       width="0.9em" 
+       height="0.9em" 
+       viewBox="0 0 24 24" 
+       fill="none" 
+       stroke="currentColor" 
+       stroke-width="1.5" 
+       stroke-linecap="round" 
+       stroke-linejoin="round" 
+       style="vertical-align: middle; margin: 0 12px; opacity: 0.6; cursor: pointer;">
+    <line class="menu-line top" x1="4" y1="6" x2="20" y2="6"></line>
+    <line class="menu-line middle" x1="4" y1="12" x2="20" y2="12"></line>
+    <line class="menu-line bottom" x1="4" y1="18" x2="20" y2="18"></line>
+  </svg>
 `;
       document.getElementById('all-course-title').innerHTML = `
       <span style="display: inline-flex; align-items: center; justify-content: center; gap: 8px;">
@@ -1656,28 +1659,6 @@ function checkDateTrigger() {
 
   document.getElementById('dateSection').style.display = 'block';
   updatePriceList();
-}
-
-// 輔助函式：確保日期格式正確且不跳時區
-function formatDate(date) {
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, '0');
-  const d = String(date.getDate()).padStart(2, '0');
-  return `${y}-${m}-${d}`;
-}
-
-// 針對 iPhone 的防呆檢查
-function handleDateChange(input, min, max) {
-  const selectedDate = input.value;
-  if (!selectedDate) return;
-
-  if (selectedDate < min || selectedDate > max) {
-    input.value = ""; // 強制清空
-    return;
-  }
-
-  // 原本的邏輯：抓取教室狀態
-  fetchRoomStatus();
 }
 
 // 2. 抓取教室狀態並生成表格
@@ -4818,9 +4799,11 @@ function startPeekabooEgg() {
 
 function expandMainTitle() {
   const titleEl = document.getElementById('main-title');
-  titleEl.style.transformOrigin = 'center center';
-  titleEl.style.transition = 'transform 0.4s cubic-bezier(0.25, 1, 0.5, 1)';
-  titleEl.style.transform = 'rotate(45deg)';
+  const menuIcon = document.getElementById('menu-icon');
+  if (menuIcon) {
+    menuIcon.classList.add('active');
+  }
+
 
 
   setTimeout(() => {
