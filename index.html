@@ -8,16 +8,14 @@
   <meta name="description" content="微動身活位於新竹市北區，提供最舒適的共享舞蹈空間、即時課表查詢、線上報名系統。內建智慧 AI 櫃檯秘書">
   <meta name="keywords" content="微動身活, 新竹舞蹈教室, 新竹租教室, 北區舞蹈空間, 舞蹈課表, 共享舞室">
   <meta property="og:title" content="微動身活 | 共享舞蹈空間">
-  <meta property="og:image"
-    content="https://weidonglifit.github.io/course/weidong_logoL.jpg">
+  <meta property="og:image" content="https://weidonglifit.github.io/course/weidong_logoL.jpg">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://weidonglifit.github.io/course/">
   <meta property="og:description" content="微動身活位於新竹市北區，提供最舒適的共享舞蹈空間、即時課表查詢、線上報名系統。">
   <meta property="og:site_name" content="微動身活">
   <link rel="canonical" href="https://weidonglifit.github.io/course/" />
   <title>微動身活 | 新竹共享舞蹈空間與教室租借</title>
-  <link rel="icon" type="image/png"
-    href="https://weidonglifit.github.io/course/icon_c2.png">
+  <link rel="icon" type="image/png" href="https://weidonglifit.github.io/course/icon_c2.png">
   <base target="_top">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
   <script type="application/ld+json">
@@ -45,7 +43,9 @@
   <link rel="stylesheet" href="./style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@300;400;700&family=Play:wght@400;700&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@300;400;700&family=Play:wght@400;700&display=swap"
+    rel="stylesheet">
 </head>
 
 <body>
@@ -216,6 +216,7 @@
     <div id="courseTab" class="tab-content active">
 
       <div id="courseEnrollmentSystem">
+
         <div class="tabs child-tabs" style="margin-top: 20px;">
           <div id="child-ghost-tab" class="tab-btn ghost-active"
             style="display:none; position:absolute; z-index:10; pointer-events:none;"></div>
@@ -223,6 +224,48 @@
             onclick="openSubTab(event, 'fullTermSection')">整期課程報名</button>
           <button class="tab-btn sub-tab" id="btn-single-class"
             onclick="openSubTab(event, 'singleCourseSection')">單堂課程報名</button>
+        </div>
+
+        <div id="historyWrapper" style="position: relative; margin-bottom: 20px;">
+          <div
+            style="background: linear-gradient(135deg, #fff9fa 0%, #ffeef1 100%); padding: 15px; border-radius: 12px; border: 1px dashed #F4A7B9;">
+
+            <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 12px;">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"
+                style="width: 18px; height: 18px; flex-shrink: 0;">
+                <path fill="#e87a90"
+                  d="M434.8 54.1C446.7 62.7 451.1 78.3 445.7 91.9L367.3 288L512 288C525.5 288 537.5 296.4 542.1 309.1C546.7 321.8 542.8 336 532.5 344.6L244.5 584.6C233.2 594 217.1 594.5 205.2 585.9C193.3 577.3 188.9 561.7 194.3 548.1L272.7 352L128 352C114.5 352 102.5 343.6 97.9 330.9C93.3 318.2 97.2 304 107.5 295.4L395.5 55.4C406.8 46 422.9 45.5 434.8 54.1z" />
+              </svg>
+              <b style="color: #d14d72; font-size: 1.05em;">快速帶入歷史資料</b>
+            </div>
+
+            <div class="form-row" style="display: flex; align-items: flex-end; gap: 0;">
+              <div class="field" style="flex: 1; margin-bottom: 0;">
+                <input type="tel" id="historySearchPhone" placeholder="輸入電話號碼搜尋" maxlength="10" inputmode="numeric"
+                  pattern="\d{10}"
+                  style="width: 100%; border-radius: 30px 0 0 30px; height: 48px; box-sizing: border-box; padding: 10px 15px; border: 1px solid #ddd; font-size: 16px;">
+              </div>
+              <button type="button" class="btn-universal" id="historySearchBtn" onclick="searchHistoricalData()"
+                style="background: linear-gradient(135deg, #E87A90 0%, #D05A6E 100%); width: 30%; height: 48px; margin: 0; padding: 0;
+             border-radius: 0 30px 30px 0; border: 1px solid #E87A90; border-left: none; font-size: 1em; color: white;">
+                搜尋
+              </button>
+            </div>
+
+            <div id="historyOutput"
+              style="color: #e74c3c; font-size: 0.9em; margin-top: 8px; display: none; font-weight: bold; padding-left: 5px;">
+            </div>
+          </div>
+
+          <div class="expand-input-container" id="historyDataContainer">
+            <div class="expand-header">
+              <span class="expand-title">請點選要帶入的資料</span>
+              <span class="expand-close" onclick="closeHistoryModal(event)">×</span>
+            </div>
+            <div class="expand-content" id="historyDataContentArea"
+              style="padding: 15px; min-height: 250px; background: #fcfcfc; overflow-y: auto;">
+            </div>
+          </div>
         </div>
 
         <div id="fullTermSection" class="sub-tab-content active">
@@ -686,7 +729,7 @@
     <div id="ai-chat-widget">
       <button id="ai-toggle-btn"
         onclick="let rot = parseInt(this.dataset.rot || 0) + 360; this.style.transform = 'rotate(' + rot + 'deg)'; this.dataset.rot = rot; toggleAIChat();"
-        style="width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, #E87A90 0%, #D05A6E 100%); color: white; border: none; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); padding: 7px;">
+        style="opacity: 0.9; width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, #e894a5 0%, #E87A90 100%); color: white; border: none; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); padding: 7px;">
         <svg width="50" height="50" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
           <circle cx="16" cy="16" r="14" stroke="white" stroke-width="1.5" fill="none" />
           <g transform="translate(4, 4) rotate(-45 12 12)">
@@ -742,7 +785,7 @@
       </div>
     </div>
     <div id="aiChatBubble" class="ai-chat-bubble">
-      問問微動小助手
+      問問小助手
     </div>
 
     <div id="qrcode-widget">
