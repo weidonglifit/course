@@ -1939,7 +1939,7 @@ select {
 }
 
 .countdown-timer {
-  font-family: 'Courier New', Courier, monospace;
+  font-family: 'Play', Courier, monospace;
   font-weight: bold;
   display: flex;
   align-items: center;
@@ -2538,23 +2538,6 @@ select {
 
 #qrcode-toggle-btn:active {
   transform: scale(0.92);
-}
-
-/* --- 1. 電影級攝影機推進特效 (Ken Burns Effect) --- */
-#intro-image-bg {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-image: url('https://raw.githubusercontent.com/weidonglifit/course/refs/heads/main/wd44.jpg');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  z-index: 1;
-
-  /* 動畫核心：10秒持續緩慢放大，營造空間感與時間流動感 */
-  animation: cinematicPan 10s ease-out forwards;
 }
 
 /* --- 2. 質感漸層遮罩 --- */
@@ -3740,9 +3723,8 @@ select {
 
 /* 數字樣式 */
 .cd-text span {
-  font-family: 'Courier New', Courier, monospace;
+  font-family: 'Play', Courier, monospace;
   font-size: 1.3rem;
-  font-weight: bold;
   color: #E87A90;
   line-height: 1;
 }
