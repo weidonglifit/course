@@ -251,7 +251,7 @@ window.addEventListener('load', function () {
           option.value = room.name; option.text = room.name;
           selectRoom.appendChild(option);
           roomPriceMap[room.name] = room.price;
-          priceHtml += `• ${room.name}：<strong>${room.price}/小時</strong><br>`;
+          priceHtml += `• ${room.name}：<b>${room.price}/小時</b><br>`;
         });
         const priceDisplay = document.getElementById('room-price-display');
         if (priceDisplay) { priceDisplay.innerHTML = priceHtml; }
@@ -485,7 +485,7 @@ function renderCurrentCoursesUI(courses) {
         if (parts.length >= 3) {
           const nameTeacher = parts[0].split("-");
           span.innerHTML = `
-            <strong style="color: #d14d72; font-size: 1.05rem;">${nameTeacher[0]}</strong> 
+            <b style="color: #d14d72; font-size: 1.05rem;">${nameTeacher[0]}</b> 
             <span style="color: #7f8c8d; font-size: 0.9rem;">(${nameTeacher[1] || ""})</span><br>
             <span style="background: #FFF5F7; color: #E87A90; padding: 2px 6px; border-radius: 6px; font-size: 0.85rem; border: 1px solid #F4A7B9; text-align: center; display: block; width: 80px; margin-top: 1px;">${parts[2]}</span>`;
         } else { span.innerText = courseName; }
@@ -624,7 +624,7 @@ function renderAllRules() {
         section.appendChild(h4);
 
         const contentDiv = document.createElement('div');
-        contentDiv.style.cssText = 'padding-left: 10px; border-left: 3px solid #E87A90; margin-top: 10px; line-height: 1.6; color: #555;';
+        contentDiv.style.cssText = 'padding-left: 10px; border-left: 3px solid #E87A90; margin-top: 10px; line-height: 1.6; color: #555; letter-spacing: 1px;';
         contentDiv.innerHTML = parsedContent; // 塞入處理好的內文
 
         section.appendChild(contentDiv);
