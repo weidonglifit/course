@@ -2981,32 +2981,68 @@ select {
   animation: flyRightAndFade 1.5s infinite ease-in-out;
 }
 
-@keyframes fireFlicker {
+@keyframes realisticFlicker {
   0% { 
-    opacity: 1; 
-    transform: scale(1); 
+    transform: scale(1, 1) skewX(0deg); 
+    filter: brightness(1) drop-shadow(0 0 2px rgba(232, 122, 144, 0.3));
   }
-  25% { 
-    opacity: 0.7; 
-    transform: scale(0.95); 
+  20% { 
+    transform: scale(0.95, 1.15) skewX(-3deg); 
+    filter: brightness(1.3) drop-shadow(0 0 4px rgba(232, 122, 144, 0.8));
   }
-  50% { 
-    opacity: 0.9; 
-    transform: scale(1.05); 
+  40% { 
+    transform: scale(1.05, 0.95) skewX(2deg); 
+    filter: brightness(0.9) drop-shadow(0 0 2px rgba(232, 122, 144, 0.2));
   }
-  75% { 
-    opacity: 0.6; 
-    transform: scale(0.92); 
+  60% { 
+    transform: scale(0.9, 1.2) skewX(-1deg); 
+    filter: brightness(1.4) drop-shadow(0 0 6px rgba(232, 122, 144, 1));
+  }
+  80% { 
+    transform: scale(1.02, 0.92) skewX(4deg); 
+    filter: brightness(0.85) drop-shadow(0 0 1px rgba(232, 122, 144, 0.2));
   }
   100% { 
-    opacity: 1; 
-    transform: scale(1); 
+    transform: scale(1, 1) skewX(0deg); 
+    filter: brightness(1) drop-shadow(0 0 2px rgba(232, 122, 144, 0.3));
   }
 }
 
 .flicker-svg {
-  transform-origin: center; 
-  animation: fireFlicker 0.8s infinite alternate ease-in-out; 
+  transform-origin: 50% 90%; 
+  animation: realisticFlicker 0.6s infinite ease-in-out;
+}
+
+@keyframes swing-animation {
+  0%, 100% { transform: rotate(0deg); }
+  15% { transform: rotate(20deg); }
+  30% { transform: rotate(-15deg); }
+  45% { transform: rotate(10deg); }
+  60% { transform: rotate(-5deg); }
+  75% { transform: rotate(0deg); }
+}
+
+.swing-bell {
+  transform-origin: 50% 10%; 
+  animation: swing-animation 2s ease-in-out infinite;
+}
+
+
+@keyframes breathe-glow {
+  0%, 100% {
+    filter: brightness(1) drop-shadow(0 0 2px rgba(250, 242, 159, 0.3));
+    transform: scale(1); /* 保持原本大小 */
+  }
+  50% {
+    filter: brightness(1.2) drop-shadow(0 0 6px rgb(252, 240, 101));
+    transform: scale(1.08); /* 微微放大 8%，讓呼吸感更逼真 */
+  }
+}
+
+/* 2. 只要加上這個 class，圖案就會呼吸發光 */
+.glow-svg {
+  animation: breathe-glow 2.5s ease-in-out infinite;
+  vertical-align: middle; 
 }
 
 .walking-circle {
