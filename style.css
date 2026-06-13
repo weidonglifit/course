@@ -3030,11 +3030,11 @@ select {
 
 @keyframes breathe-glow {
   0%, 100% {
-    filter: brightness(1) drop-shadow(0 0 2px rgba(250, 242, 159, 0.3));
+    filter: brightness(1) drop-shadow(0 0 2px rgba(231, 212, 179, 0.3));
     transform: scale(1); /* 保持原本大小 */
   }
   50% {
-    filter: brightness(1.2) drop-shadow(0 0 6px rgb(252, 240, 101));
+    filter: brightness(1.1) drop-shadow(0 0 6px rgb(231, 212, 179));
     transform: scale(1.08); /* 微微放大 8%，讓呼吸感更逼真 */
   }
 }
@@ -3203,33 +3203,34 @@ select {
 /* =========================================
    膠囊標籤文字專屬：心跳放大淡出特效
    ========================================= */
-@keyframes badgeTextHeartbeat {
-  0% {
-    transform: scale(1);
-    opacity: 1;
+@keyframes badgeJellyPop {
+  0%, 100% { 
+    transform: scale(1, 1); 
+    filter: brightness(1); /* 正常亮度 */
   }
-  15% {
-    transform: scale(1.15); /* 第一次心跳放大 */
-    opacity: 0.75;          /* 放大時同步微淡出 */
+  15% { 
+    transform: scale(1.15, 0.85); 
+    filter: brightness(0.9); /* 往下壓扁蓄力時，稍微變暗一點點，對比會更強烈 */
   }
-  30% {
-    transform: scale(1);
-    opacity: 1;
+  30% { 
+    transform: scale(0.9, 1.15); 
+    /* 🌟 往上拉長跳起時：亮度瞬間提升到 1.4 倍，並自帶一點點外發光 */
+    filter: brightness(1.2) drop-shadow(0 0 5px rgba(232, 122, 144, 0.6)); 
   }
-  45% {
-    transform: scale(1.15); /* 第二次連擊放大 */
-    opacity: 0.75;
+  45% { 
+    transform: scale(1.05, 0.95); 
+    filter: brightness(1.1); /* 落地時稍微還有一點點餘光 */
   }
-  60%, 100% {
-    transform: scale(1);    /* 回歸原狀並稍作停頓，模擬真實心跳節奏 */
-    opacity: 1;
+  60% { 
+    transform: scale(1, 1); 
+    filter: brightness(1); /* 迅速回歸正常亮度 */
   }
 }
 
 .badge-text-heartbeat {
-  display: inline-block;    /* 🌟 關鍵：必須是 inline-block，transform 縮放才會生效 */
-  transform-origin: center; /* 確保從文字正中心放大 */
-  animation: badgeTextHeartbeat 1.8s infinite ease-in-out; /* 無限循環重複 */
+  display: inline-block;
+  transform-origin: center;
+  animation: badgeJellyPop 1.5s infinite;
 }
 
 /* 老師小卡容器：使用 Flex 排列 */
