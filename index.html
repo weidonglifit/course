@@ -1159,8 +1159,6 @@
     </div>
 
     <div id="teacherDisplayArea" style="margin-top: 20px; text-align: left; display:none;">
-
-
       <div class="teacher-card-container" onclick="this.classList.toggle('flipped')">
         <span style="color: #bababa; font-size: 0.85em; display: block; margin-bottom: 8px;">💡 點擊照片可翻看資歷</span>
         <div class="teacher-card-inner">
@@ -1168,15 +1166,15 @@
             <img id="teacherImg" src="" referrerpolicy="no-referrer">
           </div>
           <div class="teacher-card-back"
-            style="background: #FFF5F7; border: 2px solid #F4A7B9; border-radius: 15px; padding: 20px; display: flex; flex-direction: column; align-items: flex-start; box-sizing: border-box;">
+            style="background: #FFF5F7; border: 2px solid #F4A7B9; border-radius: 15px; padding: 20px; display: flex; flex-direction: column; align-items: flex-start; box-sizing: border-box; overflow-y: auto; -webkit-overflow-scrolling: touch;">
 
             <div
-              style="color: #d14d72; font-weight: bold; margin-bottom: 10px; border-bottom: 1px solid #F4A7B9; width: 100%; padding-bottom: 5px; text-align: center;">
+              style="color: #d14d72; font-weight: bold; margin-bottom: 10px; border-bottom: 1px solid #F4A7B9; width: 100%; padding-bottom: 5px; text-align: center; flex-shrink: 0;">
               資歷與專長
             </div>
 
             <div id="teacherIntroText"
-              style="font-size: 1rem; line-height: 1.6; text-align: left; color: #555; white-space: pre-wrap; overflow-y: auto; width: 100%; flex: 1;">
+              style="font-size: 1rem; line-height: 1.6; text-align: left; color: #555; white-space: pre-wrap; width: 100%;">
             </div>
           </div>
         </div>
