@@ -128,9 +128,9 @@ window.addEventListener('load', function () {
               messageText = match[2].trim(); // 取得中括號後面的字 (例如: 蝶谷巴特手做課程)
             }
 
-            const badgeHtml = `<span style="background: linear-gradient(135deg, #FFD1DC 0%, #E87A90 100%); color: white; padding: 2px 7px; border-radius: 50px; font-size: 0.55em; font-weight: bold; margin-right: 5px; display: inline-block; vertical-align: middle; box-shadow: 0 2px 5px rgba(232, 122, 144, 0.2);"><span class="badge-text-heartbeat">${tagText}</span></span>`;
+            const badgeHtml = `<span style="background: linear-gradient(135deg, #FFD1DC 0%, #E87A90 100%); color: white; padding: 2px 7px; border-radius: 50px; font-size: 0.55em; font-weight: bold; margin-right: 5px; display: inline-block; vertical-align: middle; box-shadow: 0 2px 5px rgba(232, 122, 144, 0.2); position: relative;"><span class="badge-text-heartbeat">${tagText}</span></span>`;
 
-            return badgeHtml + `<span style="vertical-align: middle;">${messageText}</span>`;
+            return badgeHtml + `<span class="shimmer-text" style="vertical-align: middle;">${messageText}</span>`;
           }
 
           newsBoardEl.innerHTML = getNewsHtml(newsLines[currentLineIndex]);
@@ -5420,3 +5420,4 @@ function fillHistoricalData(name, phone, line, email) {
   // 帶入後自動關閉小卡視窗
   closeHistoryModal();
 }
+
