@@ -617,14 +617,19 @@
                 <input type="text" id="sLine" placeholder="方便後續聯繫">
               </div>
               <div class="field">
-                <span class="pink-highlight">匯款末5碼</span>
-                
-                <!-- 這裡套用您指定的 agreement-item 風格 -->
-                <label class="agreement-item" style="margin-top: 5px; margin-bottom: 10px; padding: 8px 10px; border: 1px solid #eee; background-color: #fafafa;">
-                  <input type="checkbox" id="usePointsCheckbox" onchange="togglePointsUse()">
-                  <span style="color: #D05A6E; font-weight: bold; font-size: 0.95em;">使用點數付款</span>
-                </label>
-                
+                <!-- 建立一個 Flex 容器，讓兩者左右並排、垂直置中 -->
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                  
+                  <span class="pink-highlight" style="margin-bottom: 0;">匯款末5碼</span>
+                  
+                  <!-- 加上 width: auto; 讓它不要佔滿整行，並且縮小一點內距讓它更精緻 -->
+                  <label class="agreement-item" style="width: auto; margin-bottom: 0; padding: 4px 10px; border: 1px solid #eee; background-color: #fafafa;">
+                    <input type="checkbox" id="usePointsCheckbox" onchange="togglePointsUse()">
+                    <span style="color: #D05A6E; font-weight: bold; font-size: 0.9em;">使用點數付款</span>
+                  </label>
+                  
+                </div>
+
                 <input type="text" id="sBank" maxlength="5" placeholder="請輸入帳號末 5 碼" inputmode="numeric"
                   oninput="validateNumber(this)">
               </div>
