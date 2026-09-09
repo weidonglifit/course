@@ -65,6 +65,7 @@ window.addEventListener('load', function () {
       const mTime = performance.now();
       const durationSeconds = ((mTime - startTime) / 1000).toFixed(3);
       console.log(`🎉 載入成功！總共花費了 ${durationSeconds} 秒。`);
+      renderPointsPlans();
       // 1. 將後端抓回的資料直接塞入全域變數中，供各功能隨時撈取
       globalSettings = initData.settings;
       allCourseData = initData.currentCourses;
@@ -5446,6 +5447,49 @@ function fillHistoricalData(name, phone, line, email) {
   closeHistoryModal();
 }
 
+// === 1. 點數卡方案設定陣列 ===
+// 以後要新增方案，只要在這裡加一行就好！
+const pointsPlanOptions = [
+  { label: "5點課程卡($1150)", price: 1150 },
+  // { label: "10點課程卡($2200)", price: 2200 }, // 未來可以隨時解除註解或新增
+];
+
+// === 2. 動態渲染方案到畫面上 ===
+function renderPointsPlans() {
+  const container = document.getElementById('pointsPlanContainer');
+  if (!container) return;
+
+  let html = '';
+  pointsPlanOptions.forEach((plan, index) => {
+    // 預設讓第一個選項被打勾，並套用粉紅底色
+    const isChecked = index === 0 ? 'checked' : '';
+    const activeStyle = index === 0 ? 'border-color: #E87A90; background-color: #FFF0F2;' : '';
+    
+    // 我們把 price 藏在 data-price 屬性中，方便送出時直接取用，不用再切字串
+    html += `
+      <label class="checkbox-item points-plan-label" style="cursor: pointer; ${activeStyle}" onclick="updatePointsPlanStyle(this)">
+        <input type="radio" name="pointsPlan" value="${plan.label}" data-price="${plan.price}" ${isChecked}>
+        <span>${plan.label}</span>
+      </label>
+    `;
+  });
+  
+  container.innerHTML = html;
+}
+
+// === 3. 點擊切換時的 UI 反饋 (變成粉紅底框) ===
+function updatePointsPlanStyle(selectedLabel) {
+  // 先把所有選項恢復成白底灰框
+  const allLabels = document.querySelectorAll('.points-plan-label');
+  allLabels.forEach(label => {
+    label.style.borderColor = '#eee';
+    label.style.backgroundColor = '#fff';
+  });
+  // 把被點擊的選項換成粉紅底框
+  selectedLabel.style.borderColor = '#E87A90';
+  selectedLabel.style.backgroundColor = '#FFF0F2';
+}
+
 function submitPointsCardForm() {
   const output = document.getElementById('pointsOutput');
   const btn = document.getElementById('submitPointsBtn');
@@ -5496,9 +5540,9 @@ function submitPointsCardForm() {
       output.style.color = "green";
       output.innerText = "✅ " + res;
 
-      // 提取金額 (從 "5點($1150)" 中抓出 1150)
-      const priceMatch = data.plan.match(/\$(\d+)/);
-      const amount = priceMatch ? priceMatch[1] : "1150";
+      // 提取金額：直接從剛剛被選取的 radio 按鈕身上，抓取預先藏好的 data-price
+      const selectedPlanEl = document.querySelector('input[name="pointsPlan"]:checked');
+      const amount = selectedPlanEl ? selectedPlanEl.getAttribute('data-price') : "0";
 
       // 顯示匯款資訊並卷動
       document.getElementById('displayFinalAmount').innerText = amount;
